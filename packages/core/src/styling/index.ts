@@ -5,3 +5,11 @@ export {
   DEFAULT_EDGE_STYLE,
 } from './style-templates';
 export type { NodeStyleTemplate, EdgeStyleTemplate } from './style-templates';
+export {
+  compileNodeStyle,
+  compileEdgeStyle,
+  applyNodeStyle,
+  applyEdgeStyle,
+  buildNodeStyleMap,
+  buildEdgeStyleMap,
+} from './style-applier';
