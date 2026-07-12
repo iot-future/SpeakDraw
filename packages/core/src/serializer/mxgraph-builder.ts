@@ -52,7 +52,7 @@ export function buildNodeCell(
   parent = '1',
 ): string[] {
   return [
-    `        <mxCell id="${escapeXml(id)}" value="${escapeXml(label)}" style="${style}" vertex="1" parent="${escapeXml(parent)}">`,
+    `        <mxCell id="${escapeXml(id)}" value="${escapeXml(label)}" style="${escapeXml(style)}" vertex="1" parent="${escapeXml(parent)}">`,
     `          <mxGeometry x="${x}" y="${y}" width="${width}" height="${height}" as="geometry" />`,
     '        </mxCell>',
   ];
@@ -104,7 +104,7 @@ export function buildEdgeCell(
   const portAttrStr = portAttrs.length > 0 ? ` ${portAttrs.join(' ')}` : '';
 
   lines.push(
-    `        <mxCell id="${escapeXml(id)}"${valueAttr} style="${style}" edge="1" parent="${escapeXml(parent)}" source="${escapeXml(source)}" target="${escapeXml(target)}"${portAttrStr}>`,
+    `        <mxCell id="${escapeXml(id)}"${valueAttr} style="${escapeXml(style)}" edge="1" parent="${escapeXml(parent)}" source="${escapeXml(source)}" target="${escapeXml(target)}"${portAttrStr}>`,
   );
 
   if (bendPoints.length > 0) {
@@ -139,14 +139,15 @@ export function wrapMxGraphModel(
   const modified = (options.now ?? new Date()).toISOString();
 
   if (options.compact) {
-    // 压缩为单行（.drawio 标准格式）
+    // 压缩为单行（.drawio 标准格式），去除 cell 行前导/尾随空白
+    const trimmedCells = cells.map((c) => c.trim());
     const body = [
       '<?xml version="1.0" encoding="UTF-8"?>',
       `<mxfile host="ai-diagram" modified="${modified}" agent="ai-diagram" type="device">`,
       `<diagram id="${options.diagramId ?? 'diagram-1'}" name="${escapeXml(options.diagramName ?? 'Page-1')}">`,
       '<mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">',
       '<root>',
-      cells.join(''),
+      trimmedCells.join(''),
       '</root>',
       '</mxGraphModel>',
       '</diagram>',

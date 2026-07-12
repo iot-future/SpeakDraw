@@ -6,6 +6,7 @@ export type { DrawioPortCoords } from './layout/port-mapping';
 // 序列化器（新版 + 旧版兼容）
 export { serialize, serializeToDrawioXml } from './serializer/drawio-xml';
 export type { SerializeOptions } from './serializer/drawio-serializer';
+export { serializeToFile } from './serializer/file-writer';
 export {
   buildRootCells,
   buildNodeCell,

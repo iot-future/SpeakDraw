@@ -20,8 +20,13 @@ export function compileNodeStyle(template: NodeStyleTemplate): string {
 
   parts.push(`shape=${template.shape}`);
   if (template.rounded !== undefined) parts.push(`rounded=${template.rounded}`);
-  parts.push('whiteSpace=wrap');
-  parts.push('html=1');
+
+  // whiteSpace：默认 "wrap"，模板可覆盖
+  parts.push(`whiteSpace=${template.whiteSpaceWrap === false ? 'nowrap' : 'wrap'}`);
+
+  // html：默认 1，模板可覆盖
+  parts.push(`html=${template.html ?? 1}`);
+
   parts.push(`fillColor=${template.fillColor}`);
   parts.push(`strokeColor=${template.strokeColor}`);
   if (template.fontSize !== undefined) parts.push(`fontSize=${template.fontSize}`);
@@ -65,6 +70,26 @@ export function compileEdgeStyle(template: EdgeStyleTemplate): string {
 }
 
 /**
+ * 安全地从节点样式映射表取值，未知类型返回默认样式。
+ */
+function getNodeTemplate(nodeType: string): NodeStyleTemplate {
+  if (nodeType in NODE_STYLE_TEMPLATES) {
+    return NODE_STYLE_TEMPLATES[nodeType as keyof typeof NODE_STYLE_TEMPLATES];
+  }
+  return DEFAULT_NODE_STYLE;
+}
+
+/**
+ * 安全地从边样式映射表取值，未知类型返回默认样式。
+ */
+function getEdgeTemplate(edgeType: string): EdgeStyleTemplate {
+  if (edgeType in EDGE_STYLE_TEMPLATES) {
+    return EDGE_STYLE_TEMPLATES[edgeType as keyof typeof EDGE_STYLE_TEMPLATES];
+  }
+  return DEFAULT_EDGE_STYLE;
+}
+
+/**
  * 根据节点类型应用样式，支持运行时覆盖。
  *
  * @param nodeType - 节点类型
@@ -72,9 +97,8 @@ export function compileEdgeStyle(template: EdgeStyleTemplate): string {
  * @returns draw.io style 字符串
  */
 export function applyNodeStyle(nodeType: string, overrides?: Partial<NodeStyleTemplate>): string {
-  const base = (NODE_STYLE_TEMPLATES as Record<string, NodeStyleTemplate>)[nodeType];
   const template: NodeStyleTemplate = {
-    ...(base ?? DEFAULT_NODE_STYLE),
+    ...getNodeTemplate(nodeType),
     ...overrides,
   };
   return compileNodeStyle(template);
@@ -88,9 +112,8 @@ export function applyNodeStyle(nodeType: string, overrides?: Partial<NodeStyleTe
  * @returns draw.io style 字符串
  */
 export function applyEdgeStyle(edgeType: string, overrides?: Partial<EdgeStyleTemplate>): string {
-  const base = (EDGE_STYLE_TEMPLATES as Record<string, EdgeStyleTemplate>)[edgeType];
   const template: EdgeStyleTemplate = {
-    ...(base ?? DEFAULT_EDGE_STYLE),
+    ...getEdgeTemplate(edgeType),
     ...overrides,
   };
   return compileEdgeStyle(template);
