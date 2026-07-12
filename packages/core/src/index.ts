@@ -1,3 +1,4 @@
-// Core library entry point
-// Layout and serializer modules will be added in Task 4
-export {};
+export { prototypeLayout } from './layout/elk-prototype';
+export type { ELKLayoutResult, LayoutNode, LayoutEdge } from './layout/elk-prototype';
+
+export { serializeToDrawioXml } from './serializer/drawio-xml';
