@@ -1,12 +1,12 @@
-import type { LLMProvider } from './provider.interface';
-import { OpenAIProvider } from './providers/openai.provider';
-import { AnthropicProvider } from './providers/anthropic.provider';
+import type { LLMProvider } from './ports/llm-provider';
+import { OpenAIProviderImpl } from './adapters/openai-provider-impl';
+import { AnthropicProviderImpl } from './adapters/anthropic-provider-impl';
 import { LLMInvalidInputError } from './errors';
 
 /** 已注册的 provider 名称 → 构造函数映射 */
 const providerRegistry: Record<string, () => LLMProvider> = {
-  openai: () => new OpenAIProvider(),
-  anthropic: () => new AnthropicProvider(),
+  openai: () => new OpenAIProviderImpl(),
+  anthropic: () => new AnthropicProviderImpl(),
 };
 
 /**

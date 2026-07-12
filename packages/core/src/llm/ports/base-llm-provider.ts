@@ -2,10 +2,10 @@ import type { LanguageModel } from 'ai';
 import { generateObject } from 'ai';
 import type { IRDiagram } from '@ai-diagram/shared';
 import { irDiagramSchema } from '@ai-diagram/shared';
-import type { LLMProvider, GenerateIROptions } from './provider.interface';
-import { buildSystemPrompt } from './prompts';
-import { LLMInvalidInputError, LLMTimeoutError, LLMUnreachableError } from './errors';
-import { validateWithRetry } from './schema-validator';
+import type { LLMProvider, GenerateIROptions } from './llm-provider';
+import { buildSystemPrompt } from '../prompts';
+import { LLMInvalidInputError, LLMTimeoutError, LLMUnreachableError } from '../errors';
+import { validateWithRetry } from '../schema-validator.service';
 
 /** 默认重试间隔（ms）— 递增：1s / 3s / 5s */
 const DEFAULT_RETRY_INTERVALS = [1000, 3000, 5000];

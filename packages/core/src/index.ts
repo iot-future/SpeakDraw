@@ -10,8 +10,8 @@ export {
   type SemanticExtractor,
   // Providers
   BaseLLMProvider,
-  OpenAIProvider,
-  AnthropicProvider,
+  OpenAIProviderImpl,
+  AnthropicProviderImpl,
   createProvider,
   getAvailableProviders,
   // Entry point

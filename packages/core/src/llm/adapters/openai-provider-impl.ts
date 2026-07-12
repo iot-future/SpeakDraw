@@ -1,15 +1,15 @@
 import type { LanguageModel } from 'ai';
 import { openai } from '@ai-sdk/openai';
-import { BaseLLMProvider } from '../base.provider';
+import { BaseLLMProvider } from '../ports/base-llm-provider';
 import { LLMMissingKeyError } from '../errors';
 
 /**
- * OpenAI LLM Provider。
+ * OpenAI LLM Provider 实现。
  *
  * 环境变量：`OPENAI_API_KEY`（必需）
  * 可选环境变量：`OPENAI_BASE_URL`（自定义 endpoint）、`OPENAI_MODEL`（模型名，默认 gpt-4o-mini）
  */
-export class OpenAIProvider extends BaseLLMProvider {
+export class OpenAIProviderImpl extends BaseLLMProvider {
   readonly name = 'openai';
 
   protected createModel(): LanguageModel {

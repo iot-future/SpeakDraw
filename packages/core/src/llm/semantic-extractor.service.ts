@@ -1,6 +1,6 @@
 import type { IRDiagram } from '@ai-diagram/shared';
 import { irDiagramSchema } from '@ai-diagram/shared';
-import type { LLMProvider, GenerateIROptions } from './provider.interface';
+import type { LLMProvider, GenerateIROptions } from './ports/llm-provider';
 import { LLMInvalidInputError, LLMSchemaMismatchError } from './errors';
 
 /**
@@ -18,7 +18,7 @@ export type SemanticExtractor = (text: string, options?: GenerateIROptions) => P
  * @example
  * ```ts
  * import { createProvider } from './provider-factory';
- * import { createSemanticExtractor } from './semantic-extractor';
+ * import { createSemanticExtractor } from './semantic-extractor.service';
  *
  * const provider = createProvider('openai');
  * const textToIR = createSemanticExtractor(provider);
