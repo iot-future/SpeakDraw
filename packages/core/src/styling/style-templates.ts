@@ -1,4 +1,66 @@
-import type { NodeType, EdgeType } from '@ai-diagram/shared';
+import type { NodeType, EdgeType, GroupType } from '@ai-diagram/shared';
+
+/**
+ * 分组容器样式模板（对齐 PRD S3-06）。
+ */
+export interface GroupStyleTemplate {
+  /** 形状名称（'rectangle', 'swimlane'） */
+  shape: string;
+  /** 填充颜色 */
+  fillColor: string;
+  /** 边框颜色 */
+  strokeColor: string;
+  /** 是否虚线 */
+  dashed?: 0 | 1;
+  /** 是否圆角 */
+  rounded?: 0 | 1;
+  /** 字号 */
+  fontSize?: number;
+  /** 字体族 */
+  fontFamily?: string;
+  /** 额外 style 属性 */
+  extras?: string;
+}
+
+/**
+ * 分组类型 → 容器样式模板。
+ *
+ * | type      | shape     | 说明               |
+ * |-----------|-----------|--------------------|
+ * | container | rectangle | 虚线圆角矩形，标签左上 |
+ * | swimlane  | swimlane  | 泳道，标题栏 30px     |
+ * | layer     | rectangle | 透明/半透明，仅虚线边框 |
+ */
+export const GROUP_STYLE_TEMPLATES: Record<GroupType, GroupStyleTemplate> = {
+  container: {
+    shape: 'rectangle',
+    fillColor: '#F0F4FF',
+    strokeColor: '#6c8ebf',
+    dashed: 1,
+    rounded: 1,
+    fontSize: 12,
+    fontFamily: 'Helvetica,Sans-serif',
+    extras: 'align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;',
+  },
+  swimlane: {
+    shape: 'swimlane',
+    fillColor: '#F5F5F5',
+    strokeColor: '#666666',
+    fontSize: 13,
+    fontFamily: 'Helvetica,Sans-serif',
+    extras: 'startSize=30;horizontal=0;',
+  },
+  layer: {
+    shape: 'rectangle',
+    fillColor: 'none',
+    strokeColor: '#CCCCCC',
+    dashed: 1,
+    rounded: 0,
+    fontSize: 11,
+    fontFamily: 'Helvetica,Sans-serif',
+    extras: 'align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;opacity=30;',
+  },
+};
 
 /**
  * 节点样式模板。

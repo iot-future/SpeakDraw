@@ -28,6 +28,38 @@ export function buildRootCells(): string[] {
 }
 
 /**
+ * 构建分组容器 mxCell XML（对齐 PRD S3-06）。
+ * 容器使用 `container="1"` 属性，draw.io 会自动将其子节点（parent 指向此容器）
+ * 视为容器内容，支持折叠/展开。
+ *
+ * @param id - 容器唯一标识（即 IRGroup.id）
+ * @param label - 容器标题
+ * @param style - draw.io style 属性字符串
+ * @param x - 左上角 x 坐标
+ * @param y - 左上角 y 坐标
+ * @param width - 容器宽度（子节点包围盒 + padding）
+ * @param height - 容器高度（子节点包围盒 + padding）
+ * @param parent - 父 cell id，默认 "1"
+ * @returns mxCell XML 行数组
+ */
+export function buildContainerCell(
+  id: string,
+  label: string,
+  style: string,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  parent = '1',
+): string[] {
+  return [
+    `        <mxCell id="${escapeXml(id)}" value="${escapeXml(label)}" style="${escapeXml(style)}" vertex="1" container="1" parent="${escapeXml(parent)}">`,
+    `          <mxGeometry x="${x}" y="${y}" width="${width}" height="${height}" as="geometry" />`,
+    '        </mxCell>',
+  ];
+}
+
+/**
  * 构建节点 mxCell XML。
  * PRD S3-08：每个 LayoutNode → `<mxCell vertex="1">` + `<mxGeometry>`。
  *

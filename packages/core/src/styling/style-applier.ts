@@ -1,11 +1,35 @@
 import type { IRDiagram } from '@ai-diagram/shared';
-import type { NodeStyleTemplate, EdgeStyleTemplate } from './style-templates';
+import type { NodeStyleTemplate, EdgeStyleTemplate, GroupStyleTemplate } from './style-templates';
 import {
   NODE_STYLE_TEMPLATES,
   EDGE_STYLE_TEMPLATES,
+  GROUP_STYLE_TEMPLATES,
   DEFAULT_NODE_STYLE,
   DEFAULT_EDGE_STYLE,
 } from './style-templates';
+
+/**
+ * 将分组容器样式模板编译为 draw.io style 属性字符串。
+ *
+ * @param template - 容器样式模板
+ * @returns draw.io 兼容的 style 字符串
+ */
+export function compileGroupStyle(template: GroupStyleTemplate): string {
+  const parts: string[] = [];
+
+  parts.push(`shape=${template.shape}`);
+  if (template.rounded !== undefined) parts.push(`rounded=${template.rounded}`);
+  if (template.dashed !== undefined) parts.push(`dashed=${template.dashed}`);
+  parts.push('whiteSpace=wrap');
+  parts.push('html=1');
+  parts.push(`fillColor=${template.fillColor}`);
+  parts.push(`strokeColor=${template.strokeColor}`);
+  if (template.fontSize !== undefined) parts.push(`fontSize=${template.fontSize}`);
+  if (template.fontFamily !== undefined) parts.push(`fontFamily=${template.fontFamily}`);
+  if (template.extras) parts.push(template.extras);
+
+  return parts.join(';') + ';';
+}
 
 /**
  * 将节点样式模板编译为 draw.io style 属性字符串。
@@ -193,6 +217,33 @@ export function buildEdgeStyleMap(
   for (const edge of ir.edges) {
     const overrides = customTemplates?.[edge.id];
     styleMap.set(edge.id, applyEdgeStyle(edge.type, overrides));
+  }
+
+  return styleMap;
+}
+
+/**
+ * 根据 IR 构建分组 id → draw.io style 字符串的映射。
+ * 用于 group 容器渲染（S3-06）。
+ *
+ * @param ir - 中间表示图
+ * @param customTemplates - 自定义容器样式覆盖（可选）
+ * @returns Map<groupId, styleString>，无分组时返回空 Map
+ */
+export function buildGroupStyleMap(
+  ir: IRDiagram,
+  customTemplates?: Partial<Record<string, Partial<GroupStyleTemplate>>>,
+): Map<string, string> {
+  const styleMap = new Map<string, string>();
+
+  if (!ir.groups) return styleMap;
+
+  for (const group of ir.groups) {
+    // 未知类型回退为 container 样式
+    const base = GROUP_STYLE_TEMPLATES[group.type] ?? GROUP_STYLE_TEMPLATES.container;
+    const overrides = customTemplates?.[group.id];
+    const template: GroupStyleTemplate = { ...base, ...overrides };
+    styleMap.set(group.id, compileGroupStyle(template));
   }
 
   return styleMap;
