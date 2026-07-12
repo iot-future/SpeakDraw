@@ -1,7 +1,7 @@
 import type { ElkNode, ElkExtendedEdge, ElkPort } from 'elkjs/lib/elk.bundled';
 import type { IRDiagram, IRNode, IREdge, LayoutOptions, PortSide } from '@ai-diagram/shared';
 
-/** 默认布局参数 */
+/** 默认布局参数（仅含本模块消费的字段，padding 由 elk-layouter.ts 单独管理） */
 const DEFAULTS = {
   defaultNodeSize: { width: 120, height: 60 },
   spacingNodeNode: 50,
@@ -12,7 +12,6 @@ const DEFAULTS = {
   charWidthFactor: 0.6,
   labelPadding: 20,
   maxNodeSize: { width: 400, height: 200 },
-  padding: 40,
 } as const;
 
 /** 4 个端口方向常量 */

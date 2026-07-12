@@ -24,19 +24,16 @@ export interface DrawioPortCoords {
  * @param isSource - true 表示该端口是边的出口（映射到 exitX/exitY），
  *                   false 表示该端口是边的入口（映射到 entryX/entryY）
  * @returns draw.io 兼容的端口坐标
- * @throws 当 port 值非法时抛出
  */
 export function mapPortToDrawio(port: PortSide, isSource: boolean): DrawioPortCoords {
+  // Record<PortSide, T> 覆盖全部 4 个值，TypeScript 保证 coords[port] 一定存在，
+  // 无需运行时守卫，也不抛裸 Error。
   const coords: Record<PortSide, { x: number; y: number }> = {
     NORTH: { x: 0.5, y: 0 },
     SOUTH: { x: 0.5, y: 1 },
     WEST: { x: 0, y: 0.5 },
     EAST: { x: 1, y: 0.5 },
   };
-
-  if (!coords[port]) {
-    throw new Error(`Invalid port side: ${port}`);
-  }
 
   const { x, y } = coords[port];
 

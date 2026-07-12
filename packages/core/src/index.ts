@@ -1,5 +1,7 @@
-export { prototypeLayout } from './layout/elk-prototype';
-export type { ELKLayoutResult, LayoutNode, LayoutEdge } from './layout/elk-prototype';
+export { layoutDiagram } from './layout/elk-layouter';
+export { convertIRToELK, estimateNodeSize } from './layout/ir-to-elk';
+export { mapPortToDrawio, PORT_SIDE_MATRIX } from './layout/port-mapping';
+export type { DrawioPortCoords } from './layout/port-mapping';
 
 export { serializeToDrawioXml } from './serializer/drawio-xml';
 

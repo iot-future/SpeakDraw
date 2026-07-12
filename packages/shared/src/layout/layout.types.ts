@@ -1,3 +1,5 @@
+import type { Direction } from '../ir/types';
+
 /** ELK 端口方向 */
 export type PortSide = 'NORTH' | 'SOUTH' | 'WEST' | 'EAST';
 
@@ -61,7 +63,7 @@ export interface LayoutResult {
  */
 export interface LayoutOptions {
   /** 布局方向，默认由 IR.direction 决定 */
-  direction?: 'LR' | 'TB' | 'RL' | 'BT';
+  direction?: Direction;
   /** 节点间水平间距（px），默认 50 */
   spacingNodeNode?: number;
   /** 节点间垂直间距（px），默认 50 */

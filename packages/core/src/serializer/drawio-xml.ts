@@ -1,5 +1,5 @@
-import type { IRDiagram } from '@ai-diagram/shared';
-import type { ELKLayoutResult } from '../layout/elk-prototype';
+import type { IRDiagram, LayoutResult } from '@ai-diagram/shared';
+import { mapPortToDrawio } from '../layout/port-mapping';
 
 /** 节点类型 → draw.io style 简单映射 */
 const STYLE_MAP: Record<string, string> = {
@@ -43,7 +43,7 @@ export interface SerializeOptions {
  */
 export function serializeToDrawioXml(
   ir: IRDiagram,
-  layout: ELKLayoutResult,
+  layout: LayoutResult,
   options: SerializeOptions = {},
 ): string {
   const nodeStyleMap = new Map(ir.nodes.map((n) => [n.id, n.type]));
@@ -59,35 +59,51 @@ export function serializeToDrawioXml(
   // 父容器 cell id=1
   cells.push('        <mxCell id="1" parent="0" />');
 
-  // 节点 cell
+  // 节点 cell：中心点坐标 → draw.io 左上角坐标
   for (const node of layout.nodes) {
     const style = STYLE_MAP[nodeStyleMap.get(node.id) ?? 'generic'] ?? STYLE_MAP.generic!;
     const label = escapeXml(nodeLabelMap.get(node.id) ?? node.id);
+    const topLeftX = Math.round(node.x - node.width / 2);
+    const topLeftY = Math.round(node.y - node.height / 2);
     cells.push(
       `        <mxCell id="${escapeXml(node.id)}" value="${label}" style="${style}" vertex="1" parent="1">`,
     );
     cells.push(
-      `          <mxGeometry x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" as="geometry" />`,
+      `          <mxGeometry x="${topLeftX}" y="${topLeftY}" width="${node.width}" height="${node.height}" as="geometry" />`,
     );
     cells.push('        </mxCell>');
   }
 
-  // 边 cell
+  // 边 cell：含 port 映射的 exitX/exitY/entryX/entryY
   for (const edge of layout.edges) {
     const style =
       EDGE_STYLE_MAP[edgeStyleMap.get(edge.id) ?? 'association'] ?? EDGE_STYLE_MAP.association!;
     const label = edgeLabelMap.get(edge.id);
     const valueAttr = label ? ` value="${escapeXml(label)}"` : '';
 
+    // 构建 port 映射属性
+    const portAttrs: string[] = [];
+    if (edge.sourcePort) {
+      const src = mapPortToDrawio(edge.sourcePort, true);
+      if (src.exitX !== undefined) portAttrs.push(`exitX="${src.exitX}"`);
+      if (src.exitY !== undefined) portAttrs.push(`exitY="${src.exitY}"`);
+    }
+    if (edge.targetPort) {
+      const tgt = mapPortToDrawio(edge.targetPort, false);
+      if (tgt.entryX !== undefined) portAttrs.push(`entryX="${tgt.entryX}"`);
+      if (tgt.entryY !== undefined) portAttrs.push(`entryY="${tgt.entryY}"`);
+    }
+    const portAttrStr = portAttrs.length > 0 ? ` ${portAttrs.join(' ')}` : '';
+
     cells.push(
-      `        <mxCell id="${escapeXml(edge.id)}"${valueAttr} style="${style}" edge="1" parent="1" source="${escapeXml(edge.source)}" target="${escapeXml(edge.target)}">`,
+      `        <mxCell id="${escapeXml(edge.id)}"${valueAttr} style="${style}" edge="1" parent="1" source="${escapeXml(edge.source)}" target="${escapeXml(edge.target)}"${portAttrStr}>`,
     );
 
     if (edge.bendPoints.length > 0) {
       cells.push('          <mxGeometry relative="1" as="geometry">');
       cells.push('            <Array as="points">');
       for (const bp of edge.bendPoints) {
-        cells.push(`              <mxPoint x="${bp.x}" y="${bp.y}" />`);
+        cells.push(`              <mxPoint x="${Math.round(bp.x)}" y="${Math.round(bp.y)}" />`);
       }
       cells.push('            </Array>');
       cells.push('          </mxGeometry>');
