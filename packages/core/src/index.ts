@@ -61,3 +61,21 @@ export {
   LLMInvalidInputError,
   LLMMissingKeyError,
 } from './llm';
+
+// 校验模块
+export { parseGeometry } from './validation/geometry-parser';
+export type { ValidationPort } from './validation/ports/validation';
+export { StaticValidatorImpl } from './validation/adapters/static-validator-impl';
+export {
+  detectOverlaps,
+  detectEdgeThroughNode,
+  detectOrphans,
+  detectEdgeCrosses,
+  detectLabelOverflow,
+} from './validation/detectors';
+export {
+  aabbOverlap,
+  segmentIntersectsBBox,
+  linesIntersect,
+} from './validation/detectors/math-utils';
+export { smartFix } from './validation/smart-fix';
