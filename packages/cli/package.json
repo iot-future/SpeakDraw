@@ -1,0 +1,25 @@
+{
+  "name": "ai-diagram",
+  "version": "0.1.0",
+  "description": "CLI tool for AI-powered diagram generation",
+  "type": "module",
+  "main": "./src/index.ts",
+  "bin": {
+    "ai-diagram": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@ai-diagram/core": "workspace:*",
+    "@ai-diagram/shared": "workspace:*",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "ora": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.19.0"
+  }
+}
