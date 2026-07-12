@@ -1,12 +1,64 @@
+# 依赖
 node_modules/
+.pnpm-store/
+
+# 构建产物
 dist/
 build/
+out/
+*.tsbuildinfo
+.turbo/
+.next/
+.nuxt/
+.svelte-kit/
+
+# 测试 & 覆盖率
+# 注: 测试文件（*.test.ts / *.spec.ts）及快照仅本地验证，按约定不纳入 git
+coverage/
+.nyc_output/
+*.snap
+*.test.ts
+*.spec.ts
+
+# 缓存
+.cache/
+.eslintcache
+.prettiercache
+
+# 环境变量 & 密钥
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
+.env.test
+*.pem
+*.key
+
+# 日志
 *.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 系统文件
 .DS_Store
-coverage/
-.cache/
-.turbo/
-*.tsbuildinfo
+Thumbs.db
+ehthumbs.db
+
+# 编辑器 & IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.cursor/
+.codebuddy
+
+# 临时 & 产物
+tmp/
+temp/
+*.tmp
+
+# 项目文档（本地生成，不上传）
+docs/
