@@ -53,6 +53,81 @@ export const toolDefinitions: ToolDefinition[] = [
         ir: {
           type: 'object',
           description: 'IRDiagram 对象（推荐）。由调用方 LLM 直接构造，零 Key 依赖。',
+          properties: {
+            type: { type: 'string', enum: ['flowchart', 'er'], description: '图类型' },
+            direction: { type: 'string', enum: ['LR', 'TB', 'RL', 'BT'], description: '布局方向' },
+            nodes: {
+              type: 'array',
+              description: '节点列表',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string', description: '唯一标识' },
+                  label: { type: 'string', description: '显示文本' },
+                  type: {
+                    type: 'string',
+                    enum: [
+                      'entity',
+                      'service',
+                      'decision',
+                      'process',
+                      'dataStore',
+                      'note',
+                      'actor',
+                      'generic',
+                    ],
+                    description: '节点类型',
+                  },
+                  group: { type: 'string', description: '所属分组id（可选）' },
+                },
+                required: ['id', 'label', 'type'],
+              },
+            },
+            edges: {
+              type: 'array',
+              description: '边列表',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string', description: '唯一标识' },
+                  source: { type: 'string', description: '源节点id' },
+                  target: { type: 'string', description: '目标节点id' },
+                  label: { type: 'string', description: '边标签（可选）' },
+                  type: {
+                    type: 'string',
+                    enum: [
+                      'association',
+                      'inheritance',
+                      'aggregation',
+                      'composition',
+                      'foreignKey',
+                      'flow',
+                    ],
+                    description: '边类型',
+                  },
+                },
+                required: ['id', 'source', 'target', 'type'],
+              },
+            },
+            groups: {
+              type: 'array',
+              description: '分组列表（可选）',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string', description: '唯一标识' },
+                  label: { type: 'string', description: '显示文本' },
+                  type: {
+                    type: 'string',
+                    enum: ['container', 'swimlane', 'layer'],
+                    description: '分组类型',
+                  },
+                },
+                required: ['id', 'label', 'type'],
+              },
+            },
+          },
+          required: ['type', 'direction', 'nodes', 'edges'],
         },
         description: {
           type: 'string',

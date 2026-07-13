@@ -1,6 +1,6 @@
 import { layoutDiagram, serialize, StaticValidatorImpl } from '@ai-diagram/core';
 import { irDiagramSchema } from '@ai-diagram/shared';
-import type { IRDiagram } from '@ai-diagram/shared';
+import type { IRDiagram, ValidationConflict } from '@ai-diagram/shared';
 import type { ToolHandler } from '../mcp-types.js';
 
 export const generateDiagramHandler: ToolHandler = async (args, sessionManager, previewServer) => {
@@ -61,7 +61,7 @@ export const generateDiagramHandler: ToolHandler = async (args, sessionManager, 
   });
 
   // 静态几何校验
-  let conflicts: unknown[] = [];
+  let conflicts: ValidationConflict[] = [];
   try {
     const validator = new StaticValidatorImpl();
     const report = await validator.validate(xml, { tolerance: 1 });
