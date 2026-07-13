@@ -1,0 +1,27 @@
+{
+  "name": "@ai-diagram/mcp-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP Server for AI-Diagram — expose diagram generation as MCP tools",
+  "type": "module",
+  "bin": {
+    "ai-diagram-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@ai-diagram/core": "workspace:*",
+    "@ai-diagram/shared": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "vitest": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.0"
+  }
+}
