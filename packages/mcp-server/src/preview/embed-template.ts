@@ -26,23 +26,38 @@ export function embedHtml(sessionId: string): string {
 (function() {
   var frame = document.getElementById('drawio-frame');
   var loader = document.getElementById('loader');
-  frame.src = 'https://embed.diagrams.net/?embed=1';
+  // proto=json: draw.io uses JSON message format
+  frame.src = 'https://embed.diagrams.net/?embed=1&proto=json&spin=1';
 
   window.addEventListener('message', function(ev) {
-    if (ev.data === 'ready') {
-      loader.classList.add('hidden');
-      fetch('${xmlUrl}')
-        .then(function(r) { return r.text(); })
-        .then(function(xml) {
-          frame.contentWindow.postMessage(
-            JSON.stringify({ action: 'load', xml: xml, autosave: 0 }),
-            'https://embed.diagrams.net'
-          );
-        })
-        .catch(function(e) {
-          loader.textContent = 'Error: ' + e.message;
-        });
+    if (ev.source !== frame.contentWindow) return;
+    var data = ev.data;
+    var isInit = false;
+    if (data === 'ready') {
+      isInit = true;
+    } else if (typeof data === 'string') {
+      try {
+        var parsed = JSON.parse(data);
+        if (parsed && parsed.event === 'init') isInit = true;
+      } catch (e) {}
+    } else if (data && typeof data === 'object' && data.event === 'init') {
+      isInit = true;
     }
+    if (!isInit) return;
+
+    loader.classList.add('hidden');
+    fetch('${xmlUrl}')
+      .then(function(r) { return r.text(); })
+      .then(function(xml) {
+        // draw.io embed always uses JSON STRING messages
+        frame.contentWindow.postMessage(
+          JSON.stringify({ action: 'load', xml: xml, autosave: 0 }),
+          'https://embed.diagrams.net'
+        );
+      })
+      .catch(function(e) {
+        loader.textContent = 'Error: ' + e.message;
+      });
   });
 })();
 </script>
