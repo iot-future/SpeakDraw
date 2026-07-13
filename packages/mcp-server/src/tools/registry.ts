@@ -38,17 +38,28 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     name: 'generate_diagram',
     description:
-      '将自然语言描述生成图表（LLM→IR→ELK→XML全链路）。自动推断图类型、自动布局。无sessionId时自动创建新会话。',
+      '生成图表：接受 IRDiagram（推荐）或自然语言描述，执行 ELK 自动布局并序列化为 draw.io XML。' +
+      ' 推荐用法：先用你（LLM）将用户需求转为 IR JSON，调用 generate_diagram({ ir: {...} })。' +
+      ' 这样不需要服务端 LLM Key。' +
+      ' IR 格式：{ type: "flowchart"|"er", direction: "LR"|"TB"|"RL"|"BT",' +
+      ' nodes: [{ id:string, label:string, type:"entity"|"service"|"decision"|"process"|"dataStore"|"note"|"actor"|"generic", group?:string }],' +
+      ' edges: [{ id:string, source:string, target:string, label?:string, type:"association"|"inheritance"|"aggregation"|"composition"|"foreignKey"|"flow" }],' +
+      ' groups?: [{ id:string, label:string, type:"container"|"swimlane"|"layer" }] }。' +
+      ' 示例（流程图）：{ type:"flowchart", direction:"LR", nodes:[{id:"start",label:"开始",type:"process"},{id:"end",label:"结束",type:"process"}], edges:[{id:"e1",source:"start",target:"end",label:"",type:"flow"}] }。' +
+      ' 自动创建 session、校验几何冲突。',
     inputSchema: {
       type: 'object',
       properties: {
+        ir: {
+          type: 'object',
+          description: 'IRDiagram 对象（推荐）。由调用方 LLM 直接构造，零 Key 依赖。',
+        },
         description: {
           type: 'string',
-          description: '图表的自然语言描述，如"用户登录流程：用户→登录页→验证→首页"',
+          description: '自然语言描述（传统模式，需服务端配置 OPENAI_API_KEY）。',
         },
         sessionId: { type: 'string', description: '会话ID（可选，不提供则自动创建新会话）' },
       },
-      required: ['description'],
     },
   },
   {

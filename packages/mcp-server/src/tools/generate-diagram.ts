@@ -1,10 +1,29 @@
-import { textToIR, layoutDiagram, serialize, StaticValidatorImpl } from '@ai-diagram/core';
+import { layoutDiagram, serialize, StaticValidatorImpl } from '@ai-diagram/core';
+import { irDiagramSchema } from '@ai-diagram/shared';
+import type { IRDiagram } from '@ai-diagram/shared';
 import type { ToolHandler } from '../mcp-types.js';
 
 export const generateDiagramHandler: ToolHandler = async (args, sessionManager, previewServer) => {
+  // 支持两种输入：IR 对象（推荐，零 Key 依赖）或 description 字符串（传统，需服务端 Key）
+  const irInput = args['ir'] as IRDiagram | undefined;
   const description = args['description'] as string | undefined;
-  if (!description || !description.trim()) {
-    throw new Error('description must be a non-empty string');
+
+  let ir: IRDiagram;
+
+  if (irInput) {
+    // 模式1：调用方 LLM 已出 IR，直接校验后使用
+    const parsed = irDiagramSchema.safeParse(irInput);
+    if (!parsed.success) {
+      const issues = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
+      throw new Error(`IR validation failed: ${issues}`);
+    }
+    ir = parsed.data;
+  } else if (description) {
+    // 模式2：传统路径，服务端 LLM 出 IR（需要 OPENAI_API_KEY）
+    const { textToIR } = await import('@ai-diagram/core');
+    ir = await textToIR(description.trim());
+  } else {
+    throw new Error('Either "ir" (recommended) or "description" must be provided');
   }
 
   // 获取或创建 session
@@ -18,12 +37,11 @@ export const generateDiagramHandler: ToolHandler = async (args, sessionManager, 
     sessionId = inputSessionId as string;
   }
 
-  // 全链路生成：text → IR → layout → XML
-  const ir = await textToIR(description.trim());
+  // 布局 → 序列化
   const layout = await layoutDiagram(ir);
   const xml = serialize(ir, layout);
 
-  // 解析 cells 信息
+  // 解析 cells
   const cells = [
     ...ir.nodes.map((n) => ({ id: n.id, type: 'vertex' as const, label: n.label, parent: '1' })),
     ...ir.edges.map((e) => ({
@@ -36,7 +54,6 @@ export const generateDiagramHandler: ToolHandler = async (args, sessionManager, 
     })),
   ];
 
-  // 更新 session
   sessionManager.updateSession(sessionId, {
     xml,
     cells,
