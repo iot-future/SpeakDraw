@@ -1,0 +1,6 @@
+dist/
+dist-server/
+node_modules/
+*.test.ts
+*.spec.ts
+*.snap

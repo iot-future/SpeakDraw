@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist-server",
+    "rootDir": ".",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler"
+  },
+  "include": ["server/**/*.ts", "vite.config.ts", "tailwind.config.ts"],
+  "exclude": ["node_modules", "dist", "src"]
+}
