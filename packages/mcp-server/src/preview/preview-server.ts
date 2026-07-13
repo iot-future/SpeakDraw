@@ -1,6 +1,6 @@
 import { createServer, type Server } from 'node:http';
 import type { SessionManager } from '../session/session-manager';
-import { embedHtml } from './embed-template';
+import { embedHtml } from './embed-template.js';
 
 /**
  * 轻量 HTTP 预览服务器。为每个 session 提供 diagrams.net embed 预览页面。
