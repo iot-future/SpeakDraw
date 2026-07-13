@@ -27,18 +27,21 @@ export function embedHtml(sessionId: string): string {
   iframe.src = 'https://embed.diagrams.net/?' + params.toString();
 
   window.addEventListener('message', async (event) => {
-    if (event.data === 'ready') {
-      try {
-        const res = await fetch('${xmlUrl}');
-        if (!res.ok) return;
-        const xml = await res.text();
-        iframe.contentWindow?.postMessage(
-          JSON.stringify({ action: 'load', autosave: 0, xml }),
-          '*'
-        );
-      } catch (e) {
-        console.error('[ai-diagram preview] failed to load XML:', e);
-      }
+    // draw.io embed sends either 'ready' (legacy) or { event: 'init' } (JSON protocol)
+    const isReady =
+      event.data === 'ready' ||
+      (typeof event.data === 'object' && event.data?.event === 'init');
+    if (!isReady) return;
+    try {
+      const res = await fetch('${xmlUrl}');
+      if (!res.ok) return;
+      const xml = await res.text();
+      iframe.contentWindow?.postMessage(
+        JSON.stringify({ action: 'load', autosave: 0, xml }),
+        '*'
+      );
+    } catch (e) {
+      console.error('[ai-diagram preview] failed to load XML:', e);
     }
   });
 </script>
