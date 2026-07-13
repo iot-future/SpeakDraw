@@ -9,39 +9,42 @@ export function embedHtml(sessionId: string): string {
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { width: 100vw; height: 100vh; overflow: hidden; }
-  iframe { width: 100%; height: 100%; border: none; }
+  #drawio-frame { width: 100%; height: 100%; border: none; }
+  #loader {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: #f5f5f5; font-family: sans-serif; font-size: 14px; color: #888;
+    z-index: 10; transition: opacity 0.3s;
+  }
+  #loader.hidden { opacity: 0; pointer-events: none; }
 </style>
 </head>
 <body>
+<div id="loader">Loading draw.io viewer...</div>
 <iframe id="drawio-frame"></iframe>
 <script>
-  (function() {
-    var iframe = document.getElementById('drawio-frame');
-    iframe.src = 'https://embed.diagrams.net/?embed=1&proto=json&spin=1';
+(function() {
+  var frame = document.getElementById('drawio-frame');
+  var loader = document.getElementById('loader');
+  frame.src = 'https://embed.diagrams.net/?embed=1';
 
-    function loadDiagram() {
+  window.addEventListener('message', function(ev) {
+    if (ev.data === 'ready') {
+      loader.classList.add('hidden');
       fetch('${xmlUrl}')
-        .then(function(res) { return res.text(); })
+        .then(function(r) { return r.text(); })
         .then(function(xml) {
-          iframe.contentWindow.postMessage(
-            { action: 'load', autosave: 0, xml: xml },
+          frame.contentWindow.postMessage(
+            JSON.stringify({ action: 'load', xml: xml, autosave: 0 }),
             'https://embed.diagrams.net'
           );
         })
         .catch(function(e) {
-          console.error('[ai-diagram preview] failed to load XML:', e);
+          loader.textContent = 'Error: ' + e.message;
         });
     }
-
-    window.addEventListener('message', function(event) {
-      if (event.source !== iframe.contentWindow) return;
-      var data = event.data;
-      // proto=json sends JSON objects, not strings
-      if (data && typeof data === 'object' && data.event === 'init') {
-        loadDiagram();
-      }
-    });
-  })();
+  });
+})();
 </script>
 </body>
 </html>`;
