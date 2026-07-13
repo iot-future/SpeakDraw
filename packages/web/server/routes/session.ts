@@ -7,7 +7,26 @@ interface ServerSession {
   createdAt: number;
 }
 
+const SESSION_MAX_AGE_MS = 60 * 60 * 1000; // 1 hour
 const sessions = new Map<string, ServerSession>();
+
+// Periodic cleanup of stale sessions (runs every 5 minutes)
+const cleanupInterval = setInterval(
+  () => {
+    const now = Date.now();
+    for (const [id, session] of sessions) {
+      if (now - session.createdAt > SESSION_MAX_AGE_MS) {
+        sessions.delete(id);
+      }
+    }
+  },
+  5 * 60 * 1000,
+);
+
+// Allow the Node process to exit even if the interval is active
+if (cleanupInterval.unref) {
+  cleanupInterval.unref();
+}
 
 export function createSession(id?: string): ServerSession {
   const sessionId = id ?? `sess-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;

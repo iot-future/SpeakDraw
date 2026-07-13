@@ -3,7 +3,21 @@ import { z } from 'zod';
 import { layoutDiagram, serialize } from '@ai-diagram/core';
 import type { IRDiagram } from '@ai-diagram/shared';
 import { createSession, getSession } from './session';
-import { config } from '../config';
+import { callLLM } from './proxy/llm-proxy';
+
+const PROVIDER_ENDPOINTS: Record<string, string> = {
+  openai: 'https://api.openai.com/v1/chat/completions',
+  anthropic: 'https://api.anthropic.com/v1/messages',
+  deepseek: 'https://api.deepseek.com/v1/chat/completions',
+  hunyuan: 'https://api.hunyuan.cloud.tencent.com/v1/chat/completions',
+};
+
+const DEFAULT_MODELS: Record<string, string> = {
+  openai: 'gpt-4o',
+  anthropic: 'claude-3-5-sonnet-latest',
+  deepseek: 'deepseek-chat',
+  hunyuan: 'hunyuan-lite',
+};
 
 const generateRequestSchema = z.object({
   text: z.string().min(1).max(5000),
@@ -22,22 +36,22 @@ generateRouter.post('/', async (req, res) => {
     return;
   }
 
-  const { text, apiKey, provider, model, sessionId } = parsed.data;
+  const { text, apiKey, provider, model: modelOverride, sessionId } = parsed.data;
+  const model = modelOverride ?? DEFAULT_MODELS[provider];
+  const endpoint = PROVIDER_ENDPOINTS[provider];
+
+  if (!model || !endpoint) {
+    res
+      .status(400)
+      .json({ error: { code: 'UNKNOWN_PROVIDER', message: `Unknown provider: ${provider}` } });
+    return;
+  }
+
   const session = sessionId ? (getSession(sessionId) ?? createSession(sessionId)) : createSession();
 
   try {
-    // Step 1: Call LLM proxy to get IR
-    const llmRes = await fetch(`http://localhost:${config.port}/api/proxy/llm`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, apiKey, provider, model }),
-    });
-    if (!llmRes.ok) {
-      const errBody = (await llmRes.json()) as { error?: { message?: string } };
-      throw new Error(errBody.error?.message ?? 'LLM call failed');
-    }
-    const llmData = (await llmRes.json()) as { ir: unknown };
-    const ir = llmData.ir as IRDiagram;
+    // Step 1: Call LLM directly (no self-HTTP call)
+    const ir = (await callLLM({ text, apiKey, provider, model, endpoint })) as IRDiagram;
 
     // Step 2: Layout
     const layout = await layoutDiagram(ir);

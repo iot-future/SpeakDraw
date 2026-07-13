@@ -7,12 +7,27 @@ export function useGenerate(): {
   generate: (text: string) => Promise<void>;
   isGenerating: boolean;
 } {
-  const addUserMessage = useSessionStore((s) => s.addUserMessage);
-  const addAssistantMessage = useSessionStore((s) => s.addAssistantMessage);
-  const setStep = useSessionStore((s) => s.setStep);
-  const setXml = useSessionStore((s) => s.setXml);
-  const setSessionId = useSessionStore((s) => s.setSessionId);
-  const sessionId = useSessionStore((s) => s.sessionId);
+  // Batch all session selectors into a single subscription to reduce re-renders
+  const {
+    addUserMessage,
+    addAssistantMessage,
+    setStep,
+    setXml,
+    setSessionId,
+    sessionId,
+    isGenerating,
+  } = useSessionStore((s) => ({
+    addUserMessage: s.addUserMessage,
+    addAssistantMessage: s.addAssistantMessage,
+    setStep: s.setStep,
+    setXml: s.setXml,
+    setSessionId: s.setSessionId,
+    sessionId: s.sessionId,
+    isGenerating:
+      s.currentStep.phase !== 'idle' &&
+      s.currentStep.phase !== 'done' &&
+      s.currentStep.phase !== 'error',
+  }));
 
   const generate = useCallback(
     async (text: string) => {
@@ -37,7 +52,8 @@ export function useGenerate(): {
         });
 
         setStep({ phase: 'laying-out', message: 'Computing layout...' });
-        await new Promise((r) => setTimeout(r, 0)); // Let React re-render
+        // Yield to React for re-render
+        await new Promise<void>((r) => setTimeout(r, 0));
 
         setStep({ phase: 'rendering', message: 'Rendering diagram...' });
 
@@ -59,13 +75,6 @@ export function useGenerate(): {
       }
     },
     [addUserMessage, addAssistantMessage, setStep, setXml, setSessionId, sessionId],
-  );
-
-  const isGenerating = useSessionStore(
-    (s) =>
-      s.currentStep.phase !== 'idle' &&
-      s.currentStep.phase !== 'done' &&
-      s.currentStep.phase !== 'error',
   );
 
   return { generate, isGenerating };
