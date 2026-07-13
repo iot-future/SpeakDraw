@@ -15,35 +15,33 @@ export function embedHtml(sessionId: string): string {
 <body>
 <iframe id="drawio-frame"></iframe>
 <script>
-  const iframe = document.getElementById('drawio-frame');
-  const params = new URLSearchParams({
-    embed: '1',
-    ui: 'atlas',
-    spin: '1',
-    modified: 'unsaved',
-    proto: 'json',
-    configure: '1',
-  });
-  iframe.src = 'https://embed.diagrams.net/?' + params.toString();
+  (function() {
+    var iframe = document.getElementById('drawio-frame');
+    iframe.src = 'https://embed.diagrams.net/?embed=1&proto=json&spin=1';
 
-  window.addEventListener('message', async (event) => {
-    // draw.io embed sends either 'ready' (legacy) or { event: 'init' } (JSON protocol)
-    const isReady =
-      event.data === 'ready' ||
-      (typeof event.data === 'object' && event.data?.event === 'init');
-    if (!isReady) return;
-    try {
-      const res = await fetch('${xmlUrl}');
-      if (!res.ok) return;
-      const xml = await res.text();
-      iframe.contentWindow?.postMessage(
-        JSON.stringify({ action: 'load', autosave: 0, xml }),
-        '*'
-      );
-    } catch (e) {
-      console.error('[ai-diagram preview] failed to load XML:', e);
+    function loadDiagram() {
+      fetch('${xmlUrl}')
+        .then(function(res) { return res.text(); })
+        .then(function(xml) {
+          iframe.contentWindow.postMessage(
+            { action: 'load', autosave: 0, xml: xml },
+            'https://embed.diagrams.net'
+          );
+        })
+        .catch(function(e) {
+          console.error('[ai-diagram preview] failed to load XML:', e);
+        });
     }
-  });
+
+    window.addEventListener('message', function(event) {
+      if (event.source !== iframe.contentWindow) return;
+      var data = event.data;
+      // proto=json sends JSON objects, not strings
+      if (data && typeof data === 'object' && data.event === 'init') {
+        loadDiagram();
+      }
+    });
+  })();
 </script>
 </body>
 </html>`;
