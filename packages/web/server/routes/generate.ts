@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { layoutDiagram, serialize } from '@ai-diagram/core';
 import type { IRDiagram } from '@ai-diagram/shared';
 import { createSession, getSession } from './session';
+import { config } from '../config';
 
 const generateRequestSchema = z.object({
   text: z.string().min(1).max(5000),
@@ -22,24 +23,21 @@ generateRouter.post('/', async (req, res) => {
   }
 
   const { text, apiKey, provider, model, sessionId } = parsed.data;
-  // TODO: In Task 5 (LLM proxy), apiKey/provider/model will be used for actual LLM call
-  void apiKey;
-  void provider;
-  void model;
   const session = sessionId ? (getSession(sessionId) ?? createSession(sessionId)) : createSession();
 
   try {
-    // Step 1: Call LLM to get IR
-    // For now, use a browser-compatible fetch call pattern
-    // The LLM client will be created in a later task
-    // This route delegates to the LLM proxy
-    const ir: IRDiagram = {
-      type: 'flowchart',
-      direction: 'TB',
-      nodes: [],
-      edges: [],
-    };
-    // TODO: In Task 5 (LLM proxy), this will be replaced with actual LLM call
+    // Step 1: Call LLM proxy to get IR
+    const llmRes = await fetch(`http://localhost:${config.port}/api/proxy/llm`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, apiKey, provider, model }),
+    });
+    if (!llmRes.ok) {
+      const errBody = (await llmRes.json()) as { error?: { message?: string } };
+      throw new Error(errBody.error?.message ?? 'LLM call failed');
+    }
+    const llmData = (await llmRes.json()) as { ir: unknown };
+    const ir = llmData.ir as IRDiagram;
 
     // Step 2: Layout
     const layout = await layoutDiagram(ir);
