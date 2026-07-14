@@ -1,4 +1,4 @@
-import type { NodeType, EdgeType, GroupType } from '@ai-diagram/shared';
+import type { NodeType, EdgeType, GroupType, Cardinality } from '@ai-diagram/shared';
 
 /**
  * 分组容器样式模板（对齐 PRD S3-06）。
@@ -271,3 +271,33 @@ export const DEFAULT_NODE_STYLE: NodeStyleTemplate = NODE_STYLE_TEMPLATES.generi
  * 默认边样式（未匹配时回退）。
  */
 export const DEFAULT_EDGE_STYLE: EdgeStyleTemplate = EDGE_STYLE_TEMPLATES.association;
+
+/**
+ * draw.io Entity Relation 库 Crow's Foot 端点标记名称。
+ *
+ * 这些 marker 名称对应 draw.io 内置的 "Entity Relation" 形状库中的
+ * Crow's Foot 端点样式。在 mxCell style 中作为 `startArrow` / `endArrow` 使用。
+ */
+export type CardinalityMarker = 'ERone' | 'ERmany' | 'ERzeroToOne' | 'ERoneToMany' | 'ERzeroToMany';
+
+/** ER 图专用边路由风格（draw.io entityRelationEdgeStyle 不使用 bendPoints）。 */
+export const ER_EDGE_STYLE = 'entityRelationEdgeStyle' as const;
+
+/**
+ * 基数 → draw.io ER 标记映射表。
+ *
+ * | 基数   | Marker          | 视觉表现       |
+ * |--------|-----------------|---------------|
+ * | 1      | ERone           | 竖线           |
+ * | 0..1   | ERzeroToOne     | 圆圈 + 竖线    |
+ * | *      | ERmany          | 三叉爪印       |
+ * | 1..*   | ERoneToMany     | 竖线 + 爪印    |
+ * | 0..*   | ERzeroToMany    | 圆圈 + 爪印    |
+ */
+export const CARDINALITY_TO_MARKER: Record<Cardinality, CardinalityMarker> = {
+  '1': 'ERone',
+  '0..1': 'ERzeroToOne',
+  '*': 'ERmany',
+  '1..*': 'ERoneToMany',
+  '0..*': 'ERzeroToMany',
+};
