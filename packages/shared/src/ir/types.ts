@@ -8,10 +8,14 @@ export interface IRNode {
   id: string;
   /** 显示标签（必填） */
   label: string;
+  /** 多行标签（可选，按 \n 拆分后的行数组）。用于节点尺寸自适应估算。 */
+  labelRows?: string[];
   /** 节点类型（必填） */
   type: NodeType;
   /** 所属分组 id（可选） */
   group?: string;
+  /** 手动指定节点尺寸（可选），覆盖自动估算。width 和 height 均为可选，指定哪个用哪个。 */
+  size?: { width?: number; height?: number };
   /** 扩展元数据（可选） */
   metadata?: Record<string, unknown>;
 }

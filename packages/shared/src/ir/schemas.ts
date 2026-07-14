@@ -33,8 +33,15 @@ export const directionEnum = z.enum(['LR', 'TB', 'RL', 'BT']);
 export const irNodeSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
+  labelRows: z.array(z.string()).optional(),
   type: nodeTypeEnum,
   group: z.string().optional(),
+  size: z
+    .object({
+      width: z.number().positive().optional(),
+      height: z.number().positive().optional(),
+    })
+    .optional(),
   metadata: z.record(z.unknown()).optional(),
 });
 
