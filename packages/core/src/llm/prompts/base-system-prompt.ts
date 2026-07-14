@@ -33,7 +33,9 @@ export function buildSystemPrompt(diagramTypeHint?: 'er' | 'flowchart'): string 
       "source": "string (must reference existing node id)",
       "target": "string (must reference existing node id)",
       "label": "string (optional, relationship description)",
-      "type": "foreignKey" | "association" | "inheritance" | "aggregation" | "composition" | "flow"
+      "type": "foreignKey" | "association" | "inheritance" | "aggregation" | "composition" | "flow",
+      "sourceCardinality": "string (optional, ER only. One of: 1 | 0..1 | * | 1..* | 0..*)",
+      "targetCardinality": "string (optional, ER only. One of: 1 | 0..1 | * | 1..* | 0..*)"
     }
   ],
   "groups": [
@@ -49,6 +51,17 @@ export function buildSystemPrompt(diagramTypeHint?: 'er' | 'flowchart'): string 
 - ER diagrams: use "foreignKey" for many-to-one/one-to-many, "association" for many-to-many
 - Flowcharts: use "flow" for sequential steps
 
+## Cardinality Inference Rules (ER diagrams only)
+When the input describes table/entity relationships with clear cardinality hints, you SHOULD include sourceCardinality and targetCardinality:
+- "一对一" (one-to-one) → sourceCardinality: "1", targetCardinality: "1"
+- "一对多" (one-to-many) / "1:N" → sourceCardinality: "1", targetCardinality: "1..*"
+- "多对一" (many-to-one) / "N:1" → sourceCardinality: "1..*", targetCardinality: "1"
+- "多对多" (many-to-many) / "M:N" → sourceCardinality: "1..*", targetCardinality: "1..*"
+- "零或一" / "可选" → cardinality: "0..1"
+- "零或多" → cardinality: "0..*"
+- If cardinality is truly ambiguous or not mentioned, OMIT these fields (do not guess)
+- Only add cardinality to edges with type: "foreignKey"
+
 ## CRITICAL RULES (violations cause rejection)
 1. NEVER output coordinates (no x, y, width, height, position)
 2. NEVER output XML, HTML, or markdown wrapping
@@ -61,10 +74,15 @@ export function buildSystemPrompt(diagramTypeHint?: 'er' | 'flowchart'): string 
 ## Example 1 — ER Diagram
 Input: "用户表(user)和订单表(order)，用户与订单是一对多关系"
 Output:
-{"type":"er","direction":"TB","nodes":[{"id":"user","label":"用户","type":"entity"},{"id":"order","label":"订单","type":"entity"}],"edges":[{"id":"user-orders","source":"user","target":"order","label":"拥有","type":"foreignKey"}]}
+{"type":"er","direction":"TB","nodes":[{"id":"user","label":"用户","type":"entity"},{"id":"order","label":"订单","type":"entity"}],"edges":[{"id":"user-orders","source":"user","target":"order","label":"拥有","type":"foreignKey","sourceCardinality":"1","targetCardinality":"1..*"}]}
 
 ## Example 2 — Flowchart
 Input: "用户登录：输入账号密码 → 验证 → 成功进首页，失败提示错误 → 重试3次锁定"
 Output:
-{"type":"flowchart","direction":"LR","nodes":[{"id":"input-credentials","label":"输入账号密码","type":"process"},{"id":"verify","label":"验证","type":"decision"},{"id":"home","label":"进入首页","type":"process"},{"id":"error","label":"提示错误","type":"process"},{"id":"lock","label":"锁定账户","type":"process"}],"edges":[{"id":"f1","source":"input-credentials","target":"verify","type":"flow"},{"id":"f2","source":"verify","target":"home","label":"成功","type":"flow"},{"id":"f3","source":"verify","target":"error","label":"失败","type":"flow"},{"id":"f4","source":"error","target":"lock","label":"重试3次","type":"flow"}]}`;
+{"type":"flowchart","direction":"LR","nodes":[{"id":"input-credentials","label":"输入账号密码","type":"process"},{"id":"verify","label":"验证","type":"decision"},{"id":"home","label":"进入首页","type":"process"},{"id":"error","label":"提示错误","type":"process"},{"id":"lock","label":"锁定账户","type":"process"}],"edges":[{"id":"f1","source":"input-credentials","target":"verify","type":"flow"},{"id":"f2","source":"verify","target":"home","label":"成功","type":"flow"},{"id":"f3","source":"verify","target":"error","label":"失败","type":"flow"},{"id":"f4","source":"error","target":"lock","label":"重试3次","type":"flow"}]}
+
+## Example 3 — ER Diagram (ambiguous cardinality, no inference)
+Input: "用户表(user)、订单表(order)和商品表(product)，订单关联用户和商品"
+Output:
+{"type":"er","direction":"TB","nodes":[{"id":"user","label":"用户","type":"entity"},{"id":"order","label":"订单","type":"entity"},{"id":"product","label":"商品","type":"entity"}],"edges":[{"id":"user-order","source":"user","target":"order","label":"下单","type":"foreignKey"},{"id":"order-product","source":"order","target":"product","label":"包含","type":"foreignKey"}]}`;
 }
