@@ -88,46 +88,60 @@ export function serialize(
 
   // 分组容器 cell（S3-06）：节点之前先创建容器，子节点 parent 指向容器
   const groupPadding = options.groupPadding ?? DEFAULT_GROUP_PADDING;
+  const groupIds = new Set((ir.groups ?? []).map((g) => g.id));
+
   if (ir.groups && ir.groups.length > 0) {
     for (const group of ir.groups) {
-      // 找到属于该 group 的所有 layout 节点
-      const childNodes = layout.nodes.filter((n) => nodeGroupMap.get(n.id) === group.id);
       const groupStyle = groupStyleMap.get(group.id) ?? '';
       const groupLabel = groupLabelMap.get(group.id) ?? group.id;
+
+      // 优先使用 ELK 容器节点尺寸（hierarchyHandling 产生的容器节点）
+      const containerNode = layout.nodes.find((n) => n.id === group.id);
 
       let containerX: number;
       let containerY: number;
       let containerW: number;
       let containerH: number;
 
-      if (childNodes.length === 0) {
-        // 空容器：使用默认尺寸
-        containerX = MIN_POS;
-        containerY = MIN_POS;
-        containerW = EMPTY_CONTAINER_SIZE.width;
-        containerH = EMPTY_CONTAINER_SIZE.height;
+      if (containerNode) {
+        // 使用 ELK 布局结果中的容器节点尺寸（中心点 → 左上角）
+        containerX = Math.round(Math.max(MIN_POS, containerNode.x - containerNode.width / 2));
+        containerY = Math.round(Math.max(MIN_POS, containerNode.y - containerNode.height / 2));
+        containerW = containerNode.width;
+        containerH = containerNode.height;
       } else {
-        // 计算子节点包围盒 + padding
-        let minX = Number.POSITIVE_INFINITY;
-        let minY = Number.POSITIVE_INFINITY;
-        let maxX = Number.NEGATIVE_INFINITY;
-        let maxY = Number.NEGATIVE_INFINITY;
+        // 回退：容器节点不在布局结果中（如空容器），手动计算
+        const childNodes = layout.nodes.filter((n) => nodeGroupMap.get(n.id) === group.id);
 
-        for (const cn of childNodes) {
-          const left = cn.x - cn.width / 2;
-          const top = cn.y - cn.height / 2;
-          const right = cn.x + cn.width / 2;
-          const bottom = cn.y + cn.height / 2;
-          if (left < minX) minX = left;
-          if (top < minY) minY = top;
-          if (right > maxX) maxX = right;
-          if (bottom > maxY) maxY = bottom;
+        if (childNodes.length === 0) {
+          // 空容器：使用默认尺寸
+          containerX = MIN_POS;
+          containerY = MIN_POS;
+          containerW = EMPTY_CONTAINER_SIZE.width;
+          containerH = EMPTY_CONTAINER_SIZE.height;
+        } else {
+          // 计算子节点包围盒 + padding
+          let minX = Number.POSITIVE_INFINITY;
+          let minY = Number.POSITIVE_INFINITY;
+          let maxX = Number.NEGATIVE_INFINITY;
+          let maxY = Number.NEGATIVE_INFINITY;
+
+          for (const cn of childNodes) {
+            const left = cn.x - cn.width / 2;
+            const top = cn.y - cn.height / 2;
+            const right = cn.x + cn.width / 2;
+            const bottom = cn.y + cn.height / 2;
+            if (left < minX) minX = left;
+            if (top < minY) minY = top;
+            if (right > maxX) maxX = right;
+            if (bottom > maxY) maxY = bottom;
+          }
+
+          containerX = Math.round(Math.max(MIN_POS, minX - groupPadding));
+          containerY = Math.round(Math.max(MIN_POS, minY - groupPadding));
+          containerW = Math.round(maxX - minX + groupPadding * 2);
+          containerH = Math.round(maxY - minY + groupPadding * 2);
         }
-
-        containerX = Math.round(Math.max(MIN_POS, minX - groupPadding));
-        containerY = Math.round(Math.max(MIN_POS, minY - groupPadding));
-        containerW = Math.round(maxX - minX + groupPadding * 2);
-        containerH = Math.round(maxY - minY + groupPadding * 2);
       }
 
       cells.push(
@@ -144,8 +158,11 @@ export function serialize(
     }
   }
 
-  // 节点 cell（group 内节点的 parent 指向容器）
+  // 节点 cell（group 内节点的 parent 指向容器，跳过容器节点本身）
   for (const node of layout.nodes) {
+    // 跳过容器节点（已作为 group container cell 渲染）
+    if (groupIds.has(node.id)) continue;
+
     const style = nodeStyleMap.get(node.id) ?? '';
     const label = nodeLabelMap.get(node.id) ?? node.id;
     const topLeftX = Math.round(node.x - node.width / 2);
@@ -161,9 +178,23 @@ export function serialize(
   }
 
   // 边 cell（始终 parent="1"，draw.io 边不能放入容器）
+  // 统计同节点对之间的边数量，用于计算 labelOffsetY 避免标签重叠
+  const pairEdgeCount = new Map<string, number>();
+  const pairEdgeIndex = new Map<string, number>();
+  for (const edge of layout.edges) {
+    const key = [edge.source, edge.target].sort().join('::');
+    pairEdgeCount.set(key, (pairEdgeCount.get(key) ?? 0) + 1);
+  }
+
   for (const edge of layout.edges) {
     const style = edgeStyleMap.get(edge.id) ?? '';
     const label = edgeLabelMap.get(edge.id);
+
+    const pairKey = [edge.source, edge.target].sort().join('::');
+    const total = pairEdgeCount.get(pairKey) ?? 1;
+    const idx = pairEdgeIndex.get(pairKey) ?? 0;
+    pairEdgeIndex.set(pairKey, idx + 1);
+    const labelOffsetY = total > 1 ? Math.round((idx - (total - 1) / 2) * 20) : undefined;
 
     cells.push(
       ...buildEdgeCell(
@@ -178,6 +209,7 @@ export function serialize(
         '1',
         edge.sourcePortIndex,
         edge.targetPortIndex,
+        labelOffsetY,
       ),
     );
   }

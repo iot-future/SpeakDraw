@@ -7,6 +7,7 @@ import type {
   PortSide,
   LayoutOptions,
 } from '@ai-diagram/shared';
+import type { ElkNode } from 'elkjs/lib/elk.bundled';
 import { irDiagramSchema } from '@ai-diagram/shared';
 import { convertIRToELK } from './ir-to-elk';
 
@@ -47,6 +48,30 @@ function extractPortIndex(portId: string | undefined): number | undefined {
 }
 
 /**
+ * 递归收集 ELK 树中所有节点（含容器节点和叶子节点）。
+ *
+ * 处理 hierarchyHandling 产生的嵌套结构：容器节点可能有 children，
+ * 叶子节点位于深层嵌套中。本函数将所有节点展平到单一列表。
+ *
+ * @param node - ELK 节点（可能含 children）
+ * @returns 布局节点列表
+ */
+function collectNodes(node: ElkNode): LayoutNode[] {
+  const result: LayoutNode[] = [];
+  const w = node.width ?? 120;
+  const h = node.height ?? 60;
+  const x = (node.x ?? 0) + w / 2;
+  const y = (node.y ?? 0) + h / 2;
+  result.push({ id: node.id, x, y, width: w, height: h });
+  if (node.children) {
+    for (const child of node.children) {
+      result.push(...collectNodes(child));
+    }
+  }
+  return result;
+}
+
+/**
  * 对 IRDiagram 执行 ELK `layered` 布局，返回带中心点坐标与端口信息的 LayoutResult。
  *
  * 全过程：
@@ -54,7 +79,7 @@ function extractPortIndex(portId: string | undefined): number | undefined {
  * 2. IR → ELK Graph（通过 convertIRToELK，含 ports、尺寸、正交路由）
  * 3. 调用 elk.layout() 执行布局
  * 4. 结果转换为 LayoutResult：
- *    - 节点坐标从 ELK 左上角转为中心点
+ *    - 节点坐标从 ELK 左上角转为中心点（含嵌套容器节点）
  *    - 边提取 bendPoints + sourcePort/targetPort
  *    - 计算画布总尺寸（所有节点 bbox 最小包围矩形 + padding）
  *
@@ -69,14 +94,13 @@ export async function layoutDiagram(ir: IRDiagram, options?: LayoutOptions): Pro
   const elkGraph = convertIRToELK(ir, options);
   const elkLayout = await elk.layout(elkGraph);
 
-  // 提取节点：ELK 输出左上角坐标 → 中心点坐标系
-  const nodes: LayoutNode[] = (elkLayout.children ?? []).map((child) => {
-    const w = child.width ?? 120;
-    const h = child.height ?? 60;
-    const x = (child.x ?? 0) + w / 2;
-    const y = (child.y ?? 0) + h / 2;
-    return { id: child.id, x, y, width: w, height: h };
-  });
+  // 提取节点：递归遍历嵌套 ELK 树（支持 hierarchyHandling 产生的容器节点）
+  const nodes: LayoutNode[] = [];
+  if (elkLayout.children) {
+    for (const child of elkLayout.children) {
+      nodes.push(...collectNodes(child));
+    }
+  }
 
   // 提取边：bendPoints + 端口方向
   const edges: LayoutEdge[] = (elkLayout.edges ?? []).map((edge) => {

@@ -11,7 +11,7 @@ const DEFAULTS = {
   fontSize: 14,
   charWidthFactor: 0.6,
   labelPadding: 20,
-  maxNodeSize: { width: 400, height: 200 },
+  maxNodeSize: { width: 400, height: 500 },
 } as const;
 
 /** 行高（px） */
@@ -188,51 +188,44 @@ function isSelfLoop(edge: IREdge): boolean {
 }
 
 /**
- * 将 IRDiagram 转换为 ELK 内部图结构（不执行布局）。
+ * 构建单个 ELK 节点（含尺寸估算与端口创建）。
  *
- * 关键转换：
- * - 节点 → ELK child（含四边 ports、估算尺寸、override 支持）
- * - 边 → ELK edge（含 source/target 节点引用，正交路由由 layoutOptions 控制）
- * - 自环边：ELK layered 不完全支持，传入时添加标识属性
- * - 多边聚合：同 source→target 的多条边各自独立定义（ELK 自动分离路由）
- * - 布局方向、间距等配置选项 → ELK layoutOptions
- *
- * @param ir - 经过 zod 校验的 IRDiagram
- * @param options - 布局配置选项（可选）
- * @returns ELK 图根节点（children + edges + layoutOptions）
+ * @param node - IR 节点
+ * @param edgeCount - 与该节点相连的边总数
+ * @param options - 布局配置选项
+ * @returns ELK 子节点
  */
-export function convertIRToELK(ir: IRDiagram, options?: LayoutOptions): ElkNode {
-  // 统计每个节点的边数
-  const nodeEdgeCount = new Map<string, number>();
-  for (const edge of ir.edges) {
-    nodeEdgeCount.set(edge.source, (nodeEdgeCount.get(edge.source) ?? 0) + 1);
-    nodeEdgeCount.set(edge.target, (nodeEdgeCount.get(edge.target) ?? 0) + 1);
+function buildElkNode(node: IRNode, edgeCount: number, options?: LayoutOptions): ElkNode {
+  // 手动尺寸覆盖优先于自动估算 (AC-03)
+  let size: { width: number; height: number };
+  if (node.size) {
+    const estimated = estimateNodeSize(node.label, node.labelRows, options);
+    size = {
+      width: node.size.width ?? estimated.width,
+      height: node.size.height ?? estimated.height,
+    };
+  } else if (options?.nodeSizeOverrides?.[node.id]) {
+    size = options.nodeSizeOverrides[node.id]!;
+  } else {
+    size = estimateNodeSize(node.label, node.labelRows, options);
   }
 
-  const children: ElkNode[] = ir.nodes.map((node: IRNode) => {
-    // 手动尺寸覆盖优先于自动估算 (AC-03)
-    let size: { width: number; height: number };
-    if (node.size) {
-      const estimated = estimateNodeSize(node.label, node.labelRows, options);
-      size = {
-        width: node.size.width ?? estimated.width,
-        height: node.size.height ?? estimated.height,
-      };
-    } else if (options?.nodeSizeOverrides?.[node.id]) {
-      size = options.nodeSizeOverrides[node.id]!;
-    } else {
-      size = estimateNodeSize(node.label, node.labelRows, options);
-    }
+  return {
+    id: node.id,
+    width: size.width,
+    height: size.height,
+    ports: createPorts(node.id, edgeCount),
+  };
+}
 
-    return {
-      id: node.id,
-      width: size.width,
-      height: size.height,
-      ports: createPorts(node.id, nodeEdgeCount.get(node.id) ?? 0),
-    };
-  });
-
-  const edges: ElkExtendedEdge[] = ir.edges.map((edge: IREdge) => {
+/**
+ * 构建 ELK 边列表（从 IR 边转换）。
+ *
+ * @param edges - IR 边列表
+ * @returns ELK 边数组
+ */
+function buildElkEdges(edges: IREdge[]): ElkExtendedEdge[] {
+  return edges.map((edge: IREdge) => {
     const base: ElkExtendedEdge = {
       id: edge.id,
       sources: [edge.source],
@@ -249,8 +242,117 @@ export function convertIRToELK(ir: IRDiagram, options?: LayoutOptions): ElkNode 
 
     return base;
   });
+}
+
+/**
+ * 将 IRDiagram 转换为 ELK 内部图结构（不执行布局）。
+ *
+ * 关键转换：
+ * - 节点 → ELK child（含四边 ports、估算尺寸、override 支持）
+ * - 边 → ELK edge（含 source/target 节点引用，正交路由由 layoutOptions 控制）
+ * - 自环边：ELK layered 不完全支持，传入时添加标识属性
+ * - 多边聚合：同 source→target 的多条边各自独立定义（ELK 自动分离路由）
+ * - 布局方向、间距等配置选项 → ELK layoutOptions
+ * - 分组（groups）：当 ir.groups 存在且非空时，构建嵌套结构（hierarchyHandling: INCLUDE_CHILDREN）
+ *
+ * @param ir - 经过 zod 校验的 IRDiagram
+ * @param options - 布局配置选项（可选）
+ * @returns ELK 图根节点（children + edges + layoutOptions）
+ */
+export function convertIRToELK(ir: IRDiagram, options?: LayoutOptions): ElkNode {
+  // 统计每个节点的边数
+  const nodeEdgeCount = new Map<string, number>();
+  for (const edge of ir.edges) {
+    nodeEdgeCount.set(edge.source, (nodeEdgeCount.get(edge.source) ?? 0) + 1);
+    nodeEdgeCount.set(edge.target, (nodeEdgeCount.get(edge.target) ?? 0) + 1);
+  }
 
   const direction = options?.direction ?? ir.direction;
+  const edges = buildElkEdges(ir.edges);
+
+  const groups = ir.groups;
+  const hasGroups = groups && groups.length > 0;
+
+  if (!hasGroups) {
+    // === 扁平结构（无分组，AC-10 向后兼容） ===
+    const children: ElkNode[] = ir.nodes.map((node: IRNode) =>
+      buildElkNode(node, nodeEdgeCount.get(node.id) ?? 0, options),
+    );
+
+    return {
+      id: 'root',
+      layoutOptions: {
+        'elk.algorithm': 'layered',
+        'elk.direction': DIRECTION_MAP[direction] ?? 'DOWN',
+        'elk.edgeRouting': 'ORTHOGONAL',
+        'elk.spacing.nodeNode': String(options?.spacingNodeNode ?? DEFAULTS.spacingNodeNode),
+        'elk.spacing.edgeNode': String(options?.spacingEdgeNode ?? DEFAULTS.spacingEdgeNode),
+        'elk.spacing.edgeEdge': String(options?.spacingEdgeEdge ?? DEFAULTS.spacingEdgeEdge),
+        'elk.layered.spacing.nodeNodeBetweenLayers': String(
+          options?.spacingBetweenLayers ?? DEFAULTS.spacingBetweenLayers,
+        ),
+      },
+      children,
+      edges,
+    };
+  }
+
+  // === 嵌套结构（有分组，hierarchyHandling: INCLUDE_CHILDREN） ===
+
+  // 建立 nodeId → groupId 的快速查找
+  const nodeGroupMap = new Map<string, string>();
+  for (const node of ir.nodes) {
+    if (node.group) {
+      nodeGroupMap.set(node.id, node.group);
+    }
+  }
+
+  // 建立 groupId → IRGroup 的映射
+  const groupMap = new Map(groups.map((g) => [g.id, g]));
+
+  // 收集每个 group 的成员节点
+  const groupMembers = new Map<string, IRNode[]>();
+  const ungroupedNodes: IRNode[] = [];
+
+  for (const node of ir.nodes) {
+    const groupId = nodeGroupMap.get(node.id);
+    if (groupId && groupMap.has(groupId)) {
+      const members = groupMembers.get(groupId);
+      if (members) {
+        members.push(node);
+      } else {
+        groupMembers.set(groupId, [node]);
+      }
+    } else {
+      ungroupedNodes.push(node);
+    }
+  }
+
+  // 构建 group 容器节点
+  const groupContainers: ElkNode[] = [];
+  for (const group of groups) {
+    const members = groupMembers.get(group.id) ?? [];
+    const containerChildren: ElkNode[] = members.map((node) =>
+      buildElkNode(node, nodeEdgeCount.get(node.id) ?? 0, options),
+    );
+
+    groupContainers.push({
+      id: group.id,
+      layoutOptions: {
+        'elk.algorithm': 'layered',
+        'elk.direction': DIRECTION_MAP[direction] ?? 'DOWN',
+        'elk.edgeRouting': 'ORTHOGONAL',
+        'elk.spacing.nodeNode': '40',
+        'elk.padding': '[top=30,left=20,bottom=20,right=20]',
+      },
+      children: containerChildren,
+    });
+  }
+
+  // 构建未分组节点（扁平）
+  const ungroupedElkNodes: ElkNode[] = ungroupedNodes.map((node) =>
+    buildElkNode(node, nodeEdgeCount.get(node.id) ?? 0, options),
+  );
 
   return {
     id: 'root',
@@ -258,14 +360,16 @@ export function convertIRToELK(ir: IRDiagram, options?: LayoutOptions): ElkNode 
       'elk.algorithm': 'layered',
       'elk.direction': DIRECTION_MAP[direction] ?? 'DOWN',
       'elk.edgeRouting': 'ORTHOGONAL',
-      'elk.spacing.nodeNode': String(options?.spacingNodeNode ?? DEFAULTS.spacingNodeNode),
+      'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
+      'elk.spacing.nodeNode': '80',
       'elk.spacing.edgeNode': String(options?.spacingEdgeNode ?? DEFAULTS.spacingEdgeNode),
       'elk.spacing.edgeEdge': String(options?.spacingEdgeEdge ?? DEFAULTS.spacingEdgeEdge),
       'elk.layered.spacing.nodeNodeBetweenLayers': String(
         options?.spacingBetweenLayers ?? DEFAULTS.spacingBetweenLayers,
       ),
+      'elk.spacing.componentComponent': '80',
     },
-    children,
+    children: [...groupContainers, ...ungroupedElkNodes],
     edges,
   };
 }
