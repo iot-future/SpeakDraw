@@ -119,6 +119,7 @@ export function buildEdgeCell(
   parent = '1',
   sourcePortIndex?: number,
   targetPortIndex?: number,
+  labelOffsetY?: number,
 ): string[] {
   const lines: string[] = [];
 
@@ -145,11 +146,18 @@ export function buildEdgeCell(
 
   if (bendPoints.length > 0) {
     lines.push('          <mxGeometry relative="1" as="geometry">');
+    if (labelOffsetY !== undefined && labelOffsetY !== 0) {
+      lines.push(`            <mxPoint x="0" y="${labelOffsetY}" as="offset" />`);
+    }
     lines.push('            <Array as="points">');
     for (const bp of bendPoints) {
       lines.push(`              <mxPoint x="${Math.round(bp.x)}" y="${Math.round(bp.y)}" />`);
     }
     lines.push('            </Array>');
+    lines.push('          </mxGeometry>');
+  } else if (labelOffsetY !== undefined && labelOffsetY !== 0) {
+    lines.push('          <mxGeometry relative="1" as="geometry">');
+    lines.push(`            <mxPoint x="0" y="${labelOffsetY}" as="offset" />`);
     lines.push('          </mxGeometry>');
   } else {
     lines.push('          <mxGeometry relative="1" as="geometry" />');
