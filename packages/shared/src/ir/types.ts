@@ -24,6 +24,9 @@ export interface IRNode {
 export type EdgeType =
   'association' | 'inheritance' | 'aggregation' | 'composition' | 'foreignKey' | 'flow';
 
+/** ER 图关系基数（Crow's Foot Notation） */
+export type Cardinality = '1' | '0..1' | '*' | '1..*' | '0..*';
+
 /** 边定义 */
 export interface IREdge {
   /** 唯一标识（必填） */
@@ -36,6 +39,10 @@ export interface IREdge {
   label?: string;
   /** 边类型（必填） */
   type: EdgeType;
+  /** 源端基数（可选，仅 ER 图 foreignKey 边生效） */
+  sourceCardinality?: Cardinality;
+  /** 目标端基数（可选，仅 ER 图 foreignKey 边生效） */
+  targetCardinality?: Cardinality;
   /** 扩展元数据（可选） */
   metadata?: Record<string, unknown>;
 }

@@ -2,6 +2,7 @@ export type {
   NodeType,
   IRNode,
   EdgeType,
+  Cardinality,
   IREdge,
   GroupType,
   IRGroup,
@@ -13,6 +14,7 @@ export type {
 export {
   nodeTypeEnum,
   edgeTypeEnum,
+  cardinalitySchema,
   groupTypeEnum,
   diagramTypeEnum,
   directionEnum,

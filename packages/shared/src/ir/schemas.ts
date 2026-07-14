@@ -22,6 +22,9 @@ export const edgeTypeEnum = z.enum([
   'flow',
 ]);
 
+/** ER 图关系基数校验（Crow's Foot Notation） */
+export const cardinalitySchema = z.enum(['1', '0..1', '*', '1..*', '0..*']).optional();
+
 export const groupTypeEnum = z.enum(['container', 'swimlane', 'layer']);
 
 export const diagramTypeEnum = z.enum(['er', 'flowchart']);
@@ -51,6 +54,8 @@ export const irEdgeSchema = z.object({
   target: z.string().min(1),
   label: z.string().optional(),
   type: edgeTypeEnum,
+  sourceCardinality: cardinalitySchema,
+  targetCardinality: cardinalitySchema,
   metadata: z.record(z.unknown()).optional(),
 });
 
