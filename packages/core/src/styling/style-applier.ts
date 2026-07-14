@@ -6,6 +6,8 @@ import {
   GROUP_STYLE_TEMPLATES,
   DEFAULT_NODE_STYLE,
   DEFAULT_EDGE_STYLE,
+  CARDINALITY_TO_MARKER,
+  ER_EDGE_STYLE,
 } from './style-templates';
 
 /**
@@ -204,8 +206,11 @@ export function buildNodeStyleMap(
 /**
  * 根据 IR 构建边 id → draw.io style 字符串的映射。
  *
+ * 当边为 foreignKey 类型且带有 cardinality 时，自动应用 Crow's Foot 样式
+ * （entityRelationEdgeStyle + ER markers），否则保持原有 orthogonalEdgeStyle 行为。
+ *
  * @param ir - 中间表示图
- * @param customTemplates - 自定义边样式覆盖（可选）
+ * @param customTemplates - 自定义边样式覆盖（可选，合并到自动推断的 ER overrides 之上）
  * @returns Map<edgeId, styleString>
  */
 export function buildEdgeStyleMap(
@@ -215,8 +220,33 @@ export function buildEdgeStyleMap(
   const styleMap = new Map<string, string>();
 
   for (const edge of ir.edges) {
-    const overrides = customTemplates?.[edge.id];
-    styleMap.set(edge.id, applyEdgeStyle(edge.type, overrides));
+    // 仅 foreignKey 边且有 cardinality 时使用 Crow's Foot 样式
+    const hasCardinality =
+      edge.type === 'foreignKey' && (edge.sourceCardinality || edge.targetCardinality);
+
+    if (hasCardinality) {
+      const erOverrides: Partial<EdgeStyleTemplate> = {
+        edgeStyle: ER_EDGE_STYLE,
+        dashed: 0,
+        strokeColor: '#666666',
+        startFill: 0,
+        endFill: 0,
+        rounded: 0,
+        ...(customTemplates?.[edge.id] ?? {}),
+      };
+
+      if (edge.sourceCardinality) {
+        erOverrides.startArrow = CARDINALITY_TO_MARKER[edge.sourceCardinality];
+      }
+      if (edge.targetCardinality) {
+        erOverrides.endArrow = CARDINALITY_TO_MARKER[edge.targetCardinality];
+      }
+
+      styleMap.set(edge.id, applyEdgeStyle(edge.type, erOverrides));
+    } else {
+      const overrides = customTemplates?.[edge.id];
+      styleMap.set(edge.id, applyEdgeStyle(edge.type, overrides));
+    }
   }
 
   return styleMap;
