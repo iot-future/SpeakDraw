@@ -16,20 +16,34 @@ const elk = new ELK();
 const DEFAULT_PADDING = 40;
 
 /**
- * 从 ELK 边结果中提取端口方向。
- * ELK 的 port 信息在 edge.sections[].incomingShape / outgoingShape 中，
- * 通过解析 port id 后缀（_NORTH/_SOUTH/_WEST/_EAST）获取方向。
+ * 从 ELK port id 中提取端口方向。
+ * 兼容旧格式 "n1_NORTH" 和新格式 "n1_NORTH_0"（多端口）。
  *
- * @param portId - ELK 输出的 port id，如 "n1_NORTH"
+ * @param portId - ELK 输出的 port id
  * @returns PortSide 或 undefined
  */
 function extractPortSide(portId: string | undefined): PortSide | undefined {
   if (!portId) return undefined;
-  const suffix = portId.split('_').pop();
+  // 格式: "nodeId_SIDE" 或 "nodeId_SIDE_index"
+  const parts = portId.split('_');
+  if (parts.length < 2) return undefined;
+  // 最后一个部分如果是数字，取倒数第二部分为 side
+  const lastPart = parts[parts.length - 1]!;
+  const isIndex = /^\d+$/.test(lastPart);
+  const suffix = isIndex ? parts[parts.length - 2] : lastPart;
   if (suffix === 'NORTH' || suffix === 'SOUTH' || suffix === 'WEST' || suffix === 'EAST') {
     return suffix;
   }
   return undefined;
+}
+
+/** 从 ELK port id 中提取端口索引 */
+function extractPortIndex(portId: string | undefined): number | undefined {
+  if (!portId) return undefined;
+  const parts = portId.split('_');
+  const lastPart = parts[parts.length - 1]!;
+  const isIndex = /^\d+$/.test(lastPart);
+  return isIndex ? parseInt(lastPart, 10) : undefined;
 }
 
 /**
@@ -91,6 +105,8 @@ export async function layoutDiagram(ir: IRDiagram, options?: LayoutOptions): Pro
       bendPoints,
       sourcePort,
       targetPort,
+      sourcePortIndex: extractPortIndex(firstSection?.outgoingShape),
+      targetPortIndex: extractPortIndex(lastSection?.incomingShape),
     };
   });
 

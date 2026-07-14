@@ -40,6 +40,10 @@ export interface LayoutEdge {
   sourcePort?: PortSide;
   /** ELK 选择的目标端口方向（可选） */
   targetPort?: PortSide;
+  /** 源端口在多端口节点该边上的索引（0-based，可选） */
+  sourcePortIndex?: number;
+  /** 目标端口索引（可选） */
+  targetPortIndex?: number;
 }
 
 /**

@@ -23,6 +23,9 @@ const CJK_CHAR_WIDTH_FACTOR = 2;
 /** 4 个端口方向常量 */
 const PORT_SIDES: PortSide[] = ['NORTH', 'SOUTH', 'WEST', 'EAST'];
 
+/** 每边最大端口数限制 */
+const MAX_PORTS_PER_SIDE = 3;
+
 /**
  * 方向映射：IR LayoutOption/IRDiagram.direction → ELK direction string
  */
@@ -144,21 +147,37 @@ export function estimateNodeSize(
 }
 
 /**
- * 为 ELK 节点创建四边端口定义。
- * 每个端口有唯一 id（nodeId_SIDE），固定大小 5px，分布在各边中点。
+ * 为 ELK 节点创建端口定义。
+ *
+ * 端口数决策：
+ * - edgeCount ≤ 4 → 每边 1 端口（保持简洁，AC-08）
+ * - edgeCount > 4 → 每边 M = clamp(ceil(edgeCount/4), 1, 3) 个端口（AC-07）
+ *
+ * 端口 id 格式："{nodeId}_{SIDE}_{index}"（index 从 0 开始）
  *
  * @param nodeId - 节点 id
- * @returns 4 个端口组成的数组（NORTH, SOUTH, WEST, EAST）
+ * @param edgeCount - 与该节点相连的边总数（入边+出边）
+ * @returns 端口数组
  */
-function createPorts(nodeId: string): ElkPort[] {
-  return PORT_SIDES.map((side) => ({
-    id: `${nodeId}_${side}`,
-    width: 5,
-    height: 5,
-    properties: {
-      'port.side': side,
-    },
-  }));
+function createPorts(nodeId: string, edgeCount?: number): ElkPort[] {
+  const total = edgeCount ?? 0;
+  const portsPerSide = total <= 4 ? 1 : Math.min(Math.ceil(total / 4), MAX_PORTS_PER_SIDE);
+
+  const ports: ElkPort[] = [];
+  for (const side of PORT_SIDES) {
+    for (let i = 0; i < portsPerSide; i++) {
+      ports.push({
+        id: `${nodeId}_${side}_${i}`,
+        width: 5,
+        height: 5,
+        properties: {
+          'port.side': side,
+          'port.index': String(i),
+        },
+      });
+    }
+  }
+  return ports;
 }
 
 /**
@@ -183,6 +202,13 @@ function isSelfLoop(edge: IREdge): boolean {
  * @returns ELK 图根节点（children + edges + layoutOptions）
  */
 export function convertIRToELK(ir: IRDiagram, options?: LayoutOptions): ElkNode {
+  // 统计每个节点的边数
+  const nodeEdgeCount = new Map<string, number>();
+  for (const edge of ir.edges) {
+    nodeEdgeCount.set(edge.source, (nodeEdgeCount.get(edge.source) ?? 0) + 1);
+    nodeEdgeCount.set(edge.target, (nodeEdgeCount.get(edge.target) ?? 0) + 1);
+  }
+
   const children: ElkNode[] = ir.nodes.map((node: IRNode) => {
     // 手动尺寸覆盖优先于自动估算 (AC-03)
     let size: { width: number; height: number };
@@ -202,7 +228,7 @@ export function convertIRToELK(ir: IRDiagram, options?: LayoutOptions): ElkNode 
       id: node.id,
       width: size.width,
       height: size.height,
-      ports: createPorts(node.id),
+      ports: createPorts(node.id, nodeEdgeCount.get(node.id) ?? 0),
     };
   });
 

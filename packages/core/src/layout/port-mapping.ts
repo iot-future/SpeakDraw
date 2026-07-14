@@ -2,7 +2,7 @@ import type { PortSide } from '@ai-diagram/shared';
 
 /**
  * draw.io 的 exit（源端口）或 entry（目标端口）坐标。
- * 值为 0/0.5/1，表示节点该边上的相对位置。
+ * 值为 0/0.5/1 或浮点数（多端口偏移时），表示节点该边上的相对位置。
  */
 export interface DrawioPortCoords {
   exitX?: number;
@@ -12,31 +12,43 @@ export interface DrawioPortCoords {
 }
 
 /**
- * ELK port side → draw.io exitX/exitY/entryX/entryY 完整映射矩阵。
+ * ELK port side + 可选偏移索引 → draw.io exitX/exitY/entryX/entryY 映射。
  *
- * 映射规则（PRD §3.2 S2-08）：
- * - NORTH: 节点上边中点 → (0.5, 0)
- * - SOUTH: 节点下边中点 → (0.5, 1)
- * - WEST:  节点左边中点 → (0, 0.5)
- * - EAST:  节点右边中点 → (1, 0.5)
+ * 单端口（无 index）：返回边中点 (0.5, 0)/(0.5, 1)/(0, 0.5)/(1, 0.5)
+ * 多端口（有 index）：偏移 = (index + 1) / (totalPorts + 1)
  *
  * @param port - ELK 输出的端口方向
- * @param isSource - true 表示该端口是边的出口（映射到 exitX/exitY），
- *                   false 表示该端口是边的入口（映射到 entryX/entryY）
+ * @param isSource - true 表示该端口是边的出口
+ * @param portIndex - 端口在边上的索引（0-based，可选）
+ * @param totalPorts - 该边上的总端口数（可选）
  * @returns draw.io 兼容的端口坐标
  */
-export function mapPortToDrawio(port: PortSide, isSource: boolean): DrawioPortCoords {
-  // Record<PortSide, T> 覆盖全部 4 个值，TypeScript 保证 coords[port] 一定存在，
-  // 无需运行时守卫，也不抛裸 Error。
-  const coords: Record<PortSide, { x: number; y: number }> = {
-    NORTH: { x: 0.5, y: 0 },
-    SOUTH: { x: 0.5, y: 1 },
-    WEST: { x: 0, y: 0.5 },
-    EAST: { x: 1, y: 0.5 },
-  };
+export function mapPortToDrawio(
+  port: PortSide,
+  isSource: boolean,
+  portIndex?: number,
+  totalPorts?: number,
+): DrawioPortCoords {
+  const hasOffset = portIndex !== undefined && totalPorts !== undefined && totalPorts > 0;
+  const offset = hasOffset ? (portIndex + 1) / (totalPorts + 1) : 0.5;
+
+  // 多端口模式：沿边方向分布端口（NORTH/SOUTH 沿 x 轴，WEST/EAST 沿 y 轴）
+  // 单端口模式：端口在各边中点
+  const coords: Record<PortSide, { x: number; y: number }> = hasOffset
+    ? {
+        NORTH: { x: offset, y: 0 },
+        SOUTH: { x: offset, y: 1 },
+        WEST: { x: 0, y: offset },
+        EAST: { x: 1, y: offset },
+      }
+    : {
+        NORTH: { x: 0.5, y: 0 },
+        SOUTH: { x: 0.5, y: 1 },
+        WEST: { x: 0, y: 0.5 },
+        EAST: { x: 1, y: 0.5 },
+      };
 
   const { x, y } = coords[port];
-
   return isSource ? { exitX: x, exitY: y } : { entryX: x, entryY: y };
 }
 

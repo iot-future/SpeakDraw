@@ -175,6 +175,9 @@ export function serialize(
         edge.bendPoints,
         edge.sourcePort,
         edge.targetPort,
+        '1',
+        edge.sourcePortIndex,
+        edge.targetPortIndex,
       ),
     );
   }

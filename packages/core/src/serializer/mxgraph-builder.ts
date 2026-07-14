@@ -103,6 +103,8 @@ export function buildNodeCell(
  * @param sourcePort - ELK 源端口方向（可选）
  * @param targetPort - ELK 目标端口方向（可选）
  * @param parent - 父 cell id，默认 "1"（PRD S3-10）
+ * @param sourcePortIndex - 源端口在多端口节点该边上的索引（0-based，可选）
+ * @param targetPortIndex - 目标端口索引（可选）
  * @returns mxCell XML 行数组
  */
 export function buildEdgeCell(
@@ -115,6 +117,8 @@ export function buildEdgeCell(
   sourcePort?: PortSide,
   targetPort?: PortSide,
   parent = '1',
+  sourcePortIndex?: number,
+  targetPortIndex?: number,
 ): string[] {
   const lines: string[] = [];
 
@@ -124,12 +128,12 @@ export function buildEdgeCell(
   // Port 映射属性
   const portAttrs: string[] = [];
   if (sourcePort) {
-    const src = mapPortToDrawio(sourcePort, true);
+    const src = mapPortToDrawio(sourcePort, true, sourcePortIndex);
     if (src.exitX !== undefined) portAttrs.push(`exitX="${src.exitX}"`);
     if (src.exitY !== undefined) portAttrs.push(`exitY="${src.exitY}"`);
   }
   if (targetPort) {
-    const tgt = mapPortToDrawio(targetPort, false);
+    const tgt = mapPortToDrawio(targetPort, false, targetPortIndex);
     if (tgt.entryX !== undefined) portAttrs.push(`entryX="${tgt.entryX}"`);
     if (tgt.entryY !== undefined) portAttrs.push(`entryY="${tgt.entryY}"`);
   }
