@@ -123,28 +123,37 @@ export function buildEdgeCell(
 ): string[] {
   const lines: string[] = [];
 
+  // entityRelationEdgeStyle 边不使用 port 属性和 bendPoints
+  const isEREdge = style.includes('entityRelationEdgeStyle');
+
   // 构建属性
   const valueAttr = label ? ` value="${escapeXml(label)}"` : '';
 
-  // Port 映射属性
-  const portAttrs: string[] = [];
-  if (sourcePort) {
-    const src = mapPortToDrawio(sourcePort, true, sourcePortIndex);
-    if (src.exitX !== undefined) portAttrs.push(`exitX="${src.exitX}"`);
-    if (src.exitY !== undefined) portAttrs.push(`exitY="${src.exitY}"`);
+  // Port 映射属性（ER 边跳过，draw.io 自动处理端口）
+  let portAttrStr = '';
+  if (!isEREdge) {
+    const portAttrs: string[] = [];
+    if (sourcePort) {
+      const src = mapPortToDrawio(sourcePort, true, sourcePortIndex);
+      if (src.exitX !== undefined) portAttrs.push(`exitX="${src.exitX}"`);
+      if (src.exitY !== undefined) portAttrs.push(`exitY="${src.exitY}"`);
+    }
+    if (targetPort) {
+      const tgt = mapPortToDrawio(targetPort, false, targetPortIndex);
+      if (tgt.entryX !== undefined) portAttrs.push(`entryX="${tgt.entryX}"`);
+      if (tgt.entryY !== undefined) portAttrs.push(`entryY="${tgt.entryY}"`);
+    }
+    portAttrStr = portAttrs.length > 0 ? ` ${portAttrs.join(' ')}` : '';
   }
-  if (targetPort) {
-    const tgt = mapPortToDrawio(targetPort, false, targetPortIndex);
-    if (tgt.entryX !== undefined) portAttrs.push(`entryX="${tgt.entryX}"`);
-    if (tgt.entryY !== undefined) portAttrs.push(`entryY="${tgt.entryY}"`);
-  }
-  const portAttrStr = portAttrs.length > 0 ? ` ${portAttrs.join(' ')}` : '';
 
   lines.push(
     `        <mxCell id="${escapeXml(id)}"${valueAttr} style="${escapeXml(style)}" edge="1" parent="${escapeXml(parent)}" source="${escapeXml(source)}" target="${escapeXml(target)}"${portAttrStr}>`,
   );
 
-  if (bendPoints.length > 0) {
+  // ER 边使用简单 geometry，不需要 bendPoints
+  if (isEREdge) {
+    lines.push('          <mxGeometry relative="1" as="geometry" />');
+  } else if (bendPoints.length > 0) {
     lines.push('          <mxGeometry relative="1" as="geometry">');
     if (labelOffsetY !== undefined && labelOffsetY !== 0) {
       lines.push(`            <mxPoint x="0" y="${labelOffsetY}" as="offset" />`);
