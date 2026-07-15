@@ -7,6 +7,10 @@
   </p>
 </div>
 
+<p align="center">
+  <strong>English</strong> | <a href="./README.zh-CN.md">简体中文</a>
+</p>
+
 ---
 
 ## Features
@@ -28,19 +32,19 @@
 - **pnpm** ≥ 9.0
 
 ```bash
-# Install dependencies
-pnpm install
+# Install dependencies & build
+pnpm install && pnpm build
 
-# Launch Web UI (recommended)
-cd packages/web && pnpm dev
-# Frontend → http://localhost:3000
-# API Server → http://localhost:3001
+# Web UI
+cd packages/web
+node dist-server/server/index.js &   # API Server → http://localhost:3001
+npx serve dist -l 3000              # Frontend → http://localhost:3000
 
-# Or use CLI
-cd packages/cli && pnpm dev generate "A user registration system with users, orders, and products"
+# CLI
+node packages/cli/dist/index.js generate "A user registration system with users, orders, and products"
 
-# Or as an MCP Server for Claude / CodeBuddy
-cd packages/mcp-server && pnpm start
+# MCP Server (for Claude / CodeBuddy)
+node packages/mcp-server/dist/index.js
 ```
 
 > **Note**: LLM features require an API key (`OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / etc.). Configure via Web UI settings or environment variables.
