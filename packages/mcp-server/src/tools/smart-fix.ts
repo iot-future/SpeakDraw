@@ -1,4 +1,4 @@
-import { smartFix, StaticValidatorImpl } from '@ai-diagram/core';
+import { smartFix, StaticValidatorImpl } from '@speakdraw/core';
 import type { ToolHandler } from '../mcp-types.js';
 
 export const smartFixHandler: ToolHandler = async (args, sessionManager) => {

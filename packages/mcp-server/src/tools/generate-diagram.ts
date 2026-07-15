@@ -1,6 +1,6 @@
-import { layoutDiagram, serialize, StaticValidatorImpl } from '@ai-diagram/core';
-import { irDiagramSchema } from '@ai-diagram/shared';
-import type { IRDiagram, ValidationConflict } from '@ai-diagram/shared';
+import { layoutDiagram, serialize, StaticValidatorImpl } from '@speakdraw/core';
+import { irDiagramSchema } from '@speakdraw/shared';
+import type { IRDiagram, ValidationConflict } from '@speakdraw/shared';
 import type { ToolHandler } from '../mcp-types.js';
 
 export const generateDiagramHandler: ToolHandler = async (args, sessionManager, previewServer) => {
@@ -20,7 +20,7 @@ export const generateDiagramHandler: ToolHandler = async (args, sessionManager, 
     ir = parsed.data;
   } else if (description) {
     // 模式2：传统路径，服务端 LLM 出 IR（需要 OPENAI_API_KEY）
-    const { textToIR } = await import('@ai-diagram/core');
+    const { textToIR } = await import('@speakdraw/core');
     ir = await textToIR(description.trim());
   } else {
     throw new Error('Either "ir" (recommended) or "description" must be provided');

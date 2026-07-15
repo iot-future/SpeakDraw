@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import { logger } from '../../utils/logger';
 
 const llmRequestSchema = z.object({
   text: z.string().min(1).max(5000),
@@ -159,7 +160,7 @@ Output ONLY the JSON object, no markdown code fences, no explanations.`;
     );
 
     if (!response.ok) {
-      console.error(`LLM API error (${provider}): status=${response.status}`);
+      logger.error(`LLM API error`, undefined, { provider, status: response.status });
       throw new LLMProxyError(
         `LLM API returned status ${response.status}`,
         response.status >= 500 ? 502 : 502,
@@ -192,7 +193,7 @@ Output ONLY the JSON object, no markdown code fences, no explanations.`;
   );
 
   if (!response.ok) {
-    console.error(`Anthropic API error: status=${response.status}`);
+    logger.error('Anthropic API error', undefined, { status: response.status });
     throw new LLMProxyError(
       `Anthropic API returned status ${response.status}`,
       response.status >= 500 ? 502 : 502,

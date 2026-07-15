@@ -32,7 +32,7 @@
 
 ## 依赖关系
 
-- **依赖**：`@ai-diagram/shared`（IR 类型、Zod Schema、LayoutOptions/LayoutResult 类型）
+- **依赖**：`@speakdraw/shared`（IR 类型、Zod Schema、LayoutOptions/LayoutResult 类型）
 - **被依赖**：`serializer/`（序列化器消费 LayoutResult）
 - **被依赖**：`cli/`、`mcp-server/`、`web/`（通过 core 入口）
 

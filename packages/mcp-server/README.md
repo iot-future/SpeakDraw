@@ -1,8 +1,8 @@
-# @ai-diagram/mcp-server
+# @speakdraw/mcp-server
 
 ## 职责
 
-MCP Server 将 AI-Diagram 核心能力暴露为 MCP 工具，让 AI Agent 通过自然语言生成、编辑、校验和导出图表。
+MCP Server 将 SpeakDraw 核心能力暴露为 MCP 工具，让 AI Agent 通过自然语言生成、编辑、校验和导出图表。
 
 ## 目录结构
 
@@ -66,7 +66,7 @@ packages/mcp-server/src/
 
 ## 依赖关系
 
-- 依赖：`@ai-diagram/core`，`@ai-diagram/shared`，`@modelcontextprotocol/sdk`
+- 依赖：`@speakdraw/core`，`@speakdraw/shared`，`@modelcontextprotocol/sdk`
 - 被依赖：无（终端交付层）
 
 ## 数据流
@@ -99,9 +99,9 @@ MCP Server
 ## 开发
 
 ```bash
-pnpm --filter @ai-diagram/mcp-server build
-pnpm --filter @ai-diagram/mcp-server test
-pnpm --filter @ai-diagram/mcp-server test:watch
+pnpm --filter @speakdraw/mcp-server build
+pnpm --filter @speakdraw/mcp-server test
+pnpm --filter @speakdraw/mcp-server test:watch
 ```
 
 ## MCP Client 配置
@@ -111,7 +111,7 @@ pnpm --filter @ai-diagram/mcp-server test:watch
 ```json
 {
   "mcpServers": {
-    "ai-diagram": {
+    "speakdraw": {
       "command": "node",
       "args": ["packages/mcp-server/dist/index.js"],
       "env": {

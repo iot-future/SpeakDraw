@@ -1,9 +1,5 @@
 // packages/core/src/validation/smart-fix.ts
-import type {
-  ValidationConflict,
-  ValidationOptions,
-  GeometryParseResult,
-} from '@ai-diagram/shared';
+import type { ValidationConflict, ValidationOptions, GeometryParseResult } from '@speakdraw/shared';
 import type { ValidationPort } from './ports/validation';
 import { parseGeometry } from './geometry-parser';
 
@@ -51,7 +47,7 @@ export function smartFix(
     const report = validator.validate(currentXml, options);
 
     // 仅 focus error 级冲突
-    const errors = report.conflicts.filter((c) => c.severity === 'error');
+    const errors = report.conflicts.filter((c: ValidationConflict) => c.severity === 'error');
 
     if (errors.length === 0) {
       return {

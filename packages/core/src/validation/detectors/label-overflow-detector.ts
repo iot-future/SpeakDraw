@@ -1,5 +1,5 @@
 // packages/core/src/validation/detectors/label-overflow-detector.ts
-import type { GeometricVertex, ValidationConflict } from '@ai-diagram/shared';
+import type { GeometricVertex, ValidationConflict } from '@speakdraw/shared';
 import { nextConflictId } from './math-utils';
 
 /** 字符平均宽度估算值（px），基于 14px 字体 */

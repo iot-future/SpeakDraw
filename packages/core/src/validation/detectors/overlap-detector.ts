@@ -1,5 +1,5 @@
 // packages/core/src/validation/detectors/overlap-detector.ts
-import type { GeometricVertex, ValidationConflict } from '@ai-diagram/shared';
+import type { GeometricVertex, ValidationConflict } from '@speakdraw/shared';
 import { aabbOverlap, nextConflictId } from './math-utils';
 
 /**

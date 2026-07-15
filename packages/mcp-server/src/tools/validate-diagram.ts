@@ -1,4 +1,4 @@
-import { StaticValidatorImpl } from '@ai-diagram/core';
+import { StaticValidatorImpl } from '@speakdraw/core';
 import type { ToolHandler } from '../mcp-types.js';
 
 export const validateDiagramHandler: ToolHandler = async (args, sessionManager) => {

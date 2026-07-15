@@ -1,29 +1,29 @@
 import type { LanguageModel } from 'ai';
 import { generateObject } from 'ai';
-import type { IRDiagram } from '@ai-diagram/shared';
-import { irDiagramSchema } from '@ai-diagram/shared';
-import type { LLMProvider, GenerateIROptions } from './llm-provider';
-import { buildSystemPrompt } from '../prompts';
-import { LLMInvalidInputError, LLMTimeoutError, LLMUnreachableError } from '../errors';
-import { validateWithRetry } from '../schema-validator.service';
+import type { IRDiagram } from '@speakdraw/shared';
+import { irDiagramSchema } from '@speakdraw/shared';
+import type { LLMProvider, GenerateIROptions } from './llm-provider.js';
+import { buildSystemPrompt } from '../prompts/index.js';
+import { LLMInvalidInputError, LLMTimeoutError, LLMUnreachableError } from '../errors.js';
+import { validateWithRetry } from '../schema-validator.service.js';
 
-/** 默认重试间隔（ms）— 递增：1s / 3s / 5s */
+/** Default retry intervals in ms — staggered: 1s / 3s / 5s */
 const DEFAULT_RETRY_INTERVALS = [1000, 3000, 5000];
 
-/** 默认超时（ms） */
+/** Default timeout in ms */
 const DEFAULT_TIMEOUT = 30_000;
 
 /**
- * LLM Provider 抽象基类。
- * 封装了 AI SDK generateObject 调用、prompt 构建、schema 校验与重试逻辑。
- * 子类只需实现 `createModel()` 返回对应厂商的 LanguageModel 实例。
+ * Abstract base class for LLM Providers.
+ * Encapsulates AI SDK generateObject calls, prompt construction, schema validation & retry logic.
+ * Subclasses only need to implement `createModel()` returning the vendor-specific LanguageModel.
  *
- * 重试逻辑委托给 `validateWithRetry`，本类负责 LLM 调用编排与错误分类。
+ * Retry logic is delegated to `validateWithRetry`; this class handles LLM call orchestration & error classification.
  */
 export abstract class BaseLLMProvider implements LLMProvider {
   abstract readonly name: string;
 
-  /** 子类实现：返回 AI SDK 兼容的 LanguageModel */
+  /** Subclass implements: returns an AI SDK compatible LanguageModel */
   protected abstract createModel(): LanguageModel;
 
   async generateIR(text: string, options: GenerateIROptions = {}): Promise<IRDiagram> {
@@ -66,18 +66,18 @@ export abstract class BaseLLMProvider implements LLMProvider {
           );
           return object;
         } catch (err: unknown) {
-          // 超时
+          // Timeout
           if (err instanceof Error && err.message === 'LLM_CALL_TIMEOUT') {
             throw new LLMTimeoutError(`LLM call timed out after ${timeout}ms`, err);
           }
-          // 网络/连接错误
+          // Network / connection errors
           if (err instanceof TypeError || (err instanceof Error && isNetworkError(err))) {
             throw new LLMUnreachableError(
               `Cannot reach LLM provider "${this.name}": ${(err as Error).message}`,
               err,
             );
           }
-          // 其他错误透传
+          // Pass through other errors
           throw err;
         }
       },
@@ -88,8 +88,8 @@ export abstract class BaseLLMProvider implements LLMProvider {
 }
 
 /**
- * 为异步操作添加超时 + AbortController 取消支持。
- * 超时后主动 abort 底层请求，避免资源泄漏。
+ * Adds timeout + AbortController cancellation support.
+ * Aborts the underlying request on timeout to prevent resource leaks.
  */
 async function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: number): Promise<T> {
   const controller = new AbortController();
@@ -98,7 +98,6 @@ async function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: numbe
   try {
     return await fn(controller.signal);
   } catch (err) {
-    // 超时触发的 abort → 转为可识别的 timeout 错误
     if (controller.signal.aborted) {
       throw new Error('LLM_CALL_TIMEOUT');
     }
@@ -108,9 +107,7 @@ async function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: numbe
   }
 }
 
-/**
- * 判断是否为网络层错误（可抛出 LLMUnreachableError）。
- */
+/** Checks if an error is a network-layer error. */
 function isNetworkError(err: Error): boolean {
   const msg = err.message.toLowerCase();
   return (

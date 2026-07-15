@@ -13,7 +13,7 @@ async function main(): Promise<void> {
   await previewServer.start(sessionManager);
 
   const server = new Server(
-    { name: 'ai-diagram-mcp', version: '0.1.0' },
+    { name: 'speakdraw-mcp', version: '0.1.0' },
     { capabilities: { tools: {} } },
   );
 

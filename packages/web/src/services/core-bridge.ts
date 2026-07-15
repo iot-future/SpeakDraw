@@ -1,5 +1,5 @@
 import { apiClient } from './api-client';
-import type { IRDiagram, LayoutResult, ValidationReport } from '@ai-diagram/shared';
+import type { IRDiagram, LayoutResult, ValidationReport } from '@speakdraw/shared';
 
 export interface GenerateParams {
   text: string;

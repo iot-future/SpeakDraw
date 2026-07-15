@@ -1,9 +1,9 @@
 // packages/cli/src/commands/layout-only.ts
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { layoutDiagram, serializeToFile } from '@ai-diagram/core';
-import { irDiagramSchema } from '@ai-diagram/shared';
-import type { IRDiagram, Direction } from '@ai-diagram/shared';
+import { layoutDiagram, serializeToFile } from '@speakdraw/core';
+import { irDiagramSchema } from '@speakdraw/shared';
+import type { IRDiagram, Direction } from '@speakdraw/shared';
 import { createLogger } from '../utils/logger';
 
 export interface LayoutOnlyOptions {
@@ -16,7 +16,7 @@ export interface LayoutOnlyOptions {
 }
 
 /**
- * 执行 `ai-diagram layout-only` 命令。
+ * 执行 'speakdraw layout-only` 命令。
  * 跳过 LLM 阶段，从 IR JSON 文件直接生成 .drawio。
  *
  * @param irFile - IR JSON 文件路径

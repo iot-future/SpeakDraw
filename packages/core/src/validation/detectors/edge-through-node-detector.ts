@@ -1,5 +1,5 @@
 // packages/core/src/validation/detectors/edge-through-node-detector.ts
-import type { GeometryParseResult, ValidationConflict, BBox } from '@ai-diagram/shared';
+import type { GeometryParseResult, ValidationConflict, BBox } from '@speakdraw/shared';
 import { segmentIntersectsBBox, nextConflictId } from './math-utils';
 
 /**

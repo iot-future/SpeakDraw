@@ -8,7 +8,7 @@ import { runLayoutOnly } from './commands/layout-only';
 const program = new Command();
 
 program
-  .name('ai-diagram')
+  .name('speakdraw')
   .description('AI-powered diagram generation — 自然语言 → .drawio')
   .version('0.1.0')
   .exitOverride();

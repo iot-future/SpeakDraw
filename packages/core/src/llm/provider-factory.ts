@@ -1,21 +1,21 @@
-import type { LLMProvider } from './ports/llm-provider';
-import { OpenAIProviderImpl } from './adapters/openai-provider-impl';
-import { AnthropicProviderImpl } from './adapters/anthropic-provider-impl';
-import { LLMInvalidInputError } from './errors';
+import type { LLMProvider } from './ports/llm-provider.js';
+import { OpenAIProviderImpl } from './adapters/openai-provider-impl.js';
+import { AnthropicProviderImpl } from './adapters/anthropic-provider-impl.js';
+import { LLMInvalidInputError } from './errors.js';
 
-/** 已注册的 provider 名称 → 构造函数映射 */
+/** Registered provider name → constructor mapping */
 const providerRegistry: Record<string, () => LLMProvider> = {
   openai: () => new OpenAIProviderImpl(),
   anthropic: () => new AnthropicProviderImpl(),
 };
 
 /**
- * 按名称创建 LLM Provider 实例。
- * 大小写不敏感。
+ * Create an LLM Provider instance by name.
+ * Case-insensitive.
  *
- * @param name - provider 名称（"openai" | "anthropic"）
- * @returns LLMProvider 实例
- * @throws {LLMInvalidInputError} 未知 provider 名称
+ * @param name - Provider name ("openai" | "anthropic")
+ * @returns LLMProvider instance
+ * @throws {LLMInvalidInputError} Unknown provider name
  */
 export function createProvider(name: string): LLMProvider {
   const key = name.toLowerCase();
@@ -29,7 +29,7 @@ export function createProvider(name: string): LLMProvider {
 }
 
 /**
- * 获取所有已注册的 provider 名称。
+ * Get all registered provider names.
  */
 export function getAvailableProviders(): string[] {
   return Object.keys(providerRegistry);

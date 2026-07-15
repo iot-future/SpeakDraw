@@ -1,4 +1,4 @@
-import type { IRDiagram, LayoutResult } from '@ai-diagram/shared';
+import type { IRDiagram, LayoutResult } from '@speakdraw/shared';
 import { buildNodeStyleMap, buildEdgeStyleMap, buildGroupStyleMap } from '../styling/style-applier';
 import {
   buildRootCells,

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { config } from './config';
+import { logger } from './utils/logger';
 import { errorHandler } from './middleware/error-handler';
 import { healthRouter } from './routes/health';
 import { sessionRouter } from './routes/session';
@@ -26,5 +27,5 @@ app.use('/api/proxy/llm', llmProxyRouter);
 app.use(errorHandler);
 
 app.listen(config.port, () => {
-  console.log(`AI-Diagram API server running on http://localhost:${config.port}`);
+  logger.info(`AI-Diagram API server running on http://localhost:${config.port}`);
 });

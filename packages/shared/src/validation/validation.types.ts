@@ -1,44 +1,44 @@
-/** 冲突类型 */
+/** Conflict types */
 export type ConflictType = 'overlap' | 'edgeThroughNode' | 'orphan' | 'edgeCross' | 'labelOverflow';
 
-/** 冲突严重程度 */
+/** Conflict severity */
 export type ConflictSeverity = 'error' | 'warning';
 
-/** 单个校验冲突 */
+/** A single validation conflict */
 export interface ValidationConflict {
-  /** 冲突唯一标识 */
+  /** Unique conflict identifier */
   id: string;
-  /** 冲突类型 */
+  /** Conflict type */
   type: ConflictType;
-  /** 涉及的 cell ID 列表 */
+  /** Affected cell IDs */
   elements: string[];
-  /** 人类可读描述 */
+  /** Human-readable description */
   message: string;
-  /** 严重程度 */
+  /** Severity level */
   severity: ConflictSeverity;
 }
 
-/** 校验报告 */
+/** Validation report */
 export interface ValidationReport {
-  /** 是否通过所有校验 */
+  /** Whether all checks passed */
   passed: boolean;
-  /** 冲突列表 */
+  /** Conflict list */
   conflicts: ValidationConflict[];
-  /** 摘要信息 */
+  /** Summary information */
   summary: string;
 }
 
-/** 校验选项 */
+/** Validation options */
 export interface ValidationOptions {
-  /** AABB 容忍误差（px），默认 1 */
+  /** AABB overlap tolerance in px, default 1 */
   tolerance?: number;
-  /** 最大修复轮数，默认 5 */
+  /** Max fix rounds, default 5 */
   maxFixRounds?: number;
-  /** 是否启用标签溢出检测（P1），默认 false */
+  /** Enable label overflow detection (P1), default false */
   enableLabelCheck?: boolean;
 }
 
-/** 包围盒（Axis-Aligned Bounding Box） */
+/** Axis-Aligned Bounding Box */
 export interface BBox {
   x: number;
   y: number;
@@ -46,7 +46,7 @@ export interface BBox {
   height: number;
 }
 
-/** 从 XML 提取的顶点几何信息 */
+/** Vertex geometry extracted from XML */
 export interface GeometricVertex {
   id: string;
   x: number;
@@ -57,7 +57,7 @@ export interface GeometricVertex {
   kind: 'vertex';
 }
 
-/** 线段 */
+/** Line segment */
 export interface LineSegment {
   x1: number;
   y1: number;
@@ -65,7 +65,7 @@ export interface LineSegment {
   y2: number;
 }
 
-/** 从 XML 提取的边几何信息 */
+/** Edge geometry extracted from XML */
 export interface GeometricEdge {
   id: string;
   source: string;
@@ -74,10 +74,10 @@ export interface GeometricEdge {
   kind: 'edge';
 }
 
-/** 几何单元（顶点或边） */
+/** Geometric cell (vertex or edge) */
 export type GeometricCell = GeometricVertex | GeometricEdge;
 
-/** 几何解析结果 */
+/** Geometry parsing result */
 export interface GeometryParseResult {
   vertices: GeometricVertex[];
   edges: GeometricEdge[];

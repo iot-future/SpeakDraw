@@ -1,22 +1,23 @@
 {
-  "name": "@ai-diagram/mcp-server",
-  "version": "0.1.0",
+  "name": "@speakdraw/mcp-server",
+  "version": "0.2.2",
   "private": true,
-  "description": "MCP Server for AI-Diagram — expose diagram generation as MCP tools",
+  "description": "MCP Server for SpeakDraw — expose diagram generation as MCP tools",
   "type": "module",
   "bin": {
-    "ai-diagram-mcp": "./dist/index.js"
+    "speakdraw-mcp": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "start": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@ai-diagram/core": "workspace:*",
-    "@ai-diagram/shared": "workspace:*",
+    "@speakdraw/core": "workspace:*",
+    "@speakdraw/shared": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "devDependencies": {

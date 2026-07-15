@@ -1,5 +1,5 @@
-import { irDiagramSchema } from '@ai-diagram/shared';
-import type { IRDiagram } from '@ai-diagram/shared';
+import { irDiagramSchema } from '@speakdraw/shared';
+import type { IRDiagram } from '@speakdraw/shared';
 import { LLMSchemaMismatchError } from './errors';
 
 /**

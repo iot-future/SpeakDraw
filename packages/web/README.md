@@ -1,45 +1,45 @@
-# @ai-diagram/web — Web UI
+# @speakdraw/web — Web UI
 
 ## 职责
 
-为 AI-Diagram 提供 Web 界面：对话式图表生成 + draw.io 嵌入预览 + 客户端导出。
+为 SpeakDraw 提供 Web 界面：对话式图表生成 + draw.io 嵌入预览 + 客户端导出。
 BYOK（API Key 存浏览器 localStorage），服务端零状态。
 
 ## 目录结构
 
-| 路径                                 | 角色                                                        |
-| ------------------------------------ | ----------------------------------------------------------- |
-| `server/`                            | Express API server，封装 `@ai-diagram/core` 并提供 LLM 代理 |
-| `server/index.ts`                    | Server 入口，挂载路由 + 中间件                              |
-| `server/config.ts`                   | 服务端配置（端口、CORS）                                    |
-| `server/middleware/error-handler.ts` | 全局错误处理（AppError → HTTP 状态码）                      |
-| `server/routes/health.ts`            | GET /api/health — 健康检查                                  |
-| `server/routes/session.ts`           | Session CRUD（内存存储）                                    |
-| `server/routes/generate.ts`          | POST /api/generate — 全链路生成（LLM→IR→Layout→XML）        |
-| `server/routes/validate.ts`          | POST /api/validate — 静态几何校验                           |
-| `server/routes/layout.ts`            | POST /api/layout — IR → 布局 + 序列化                       |
-| `server/routes/proxy/llm-proxy.ts`   | POST /api/proxy/llm — 浏览器直连 LLM API 的代理             |
-| `src/`                               | React SPA 前端                                              |
-| `src/App.tsx`                        | 根组件，路由配置                                            |
-| `src/main.tsx`                       | ReactDOM.createRoot 入口                                    |
-| `src/components/Header.tsx`          | 顶栏：Logo + 主题切换 + 设置入口                            |
-| `src/components/Layout.tsx`          | 页面外壳                                                    |
-| `src/components/ChatPanel/`          | 左侧对话面板                                                |
-| `src/components/PreviewPanel/`       | 右侧预览面板 + draw.io embed                                |
-| `src/components/Settings/`           | 设置弹窗（API Key / Provider / Model）                      |
-| `src/components/common/`             | 通用 UI 组件（Button / Modal / Select / Spinner）           |
-| `src/pages/HomePage.tsx`             | 主页（ChatPanel + PreviewPanel 双栏）                       |
-| `src/pages/SettingsPage.tsx`         | 独立设置页                                                  |
-| `src/pages/PreviewPage.tsx`          | 纯预览页（供 MCP Server 跳转）                              |
-| `src/services/api-client.ts`         | fetch 封装（Base URL + 错误处理）                           |
-| `src/services/core-bridge.ts`        | 核心 API 调用的类型化封装                                   |
-| `src/stores/config-store.ts`         | Zustand store（API Key / Provider / Theme → localStorage）  |
-| `src/stores/session-store.ts`        | Zustand store（会话 / 消息 / XML）                          |
-| `src/hooks/useGenerate.ts`           | 生成流程 Hook（调用 API → 更新 store → 更新步骤）           |
-| `src/hooks/useDrawioEmbed.ts`        | draw.io embed postMessage 通信 Hook                         |
-| `src/hooks/useTheme.ts`              | 暗色模式 Hook                                               |
-| `src/types/chat.ts`                  | 前端类型定义（ChatMessage / StepState）                     |
-| `src/utils/download.ts`              | 浏览器下载 / 剪贴板工具函数                                 |
+| 路径                                 | 角色                                                       |
+| ------------------------------------ | ---------------------------------------------------------- |
+| `server/`                            | Express API server，封装 `@speakdraw/core` 并提供 LLM 代理 |
+| `server/index.ts`                    | Server 入口，挂载路由 + 中间件                             |
+| `server/config.ts`                   | 服务端配置（端口、CORS）                                   |
+| `server/middleware/error-handler.ts` | 全局错误处理（AppError → HTTP 状态码）                     |
+| `server/routes/health.ts`            | GET /api/health — 健康检查                                 |
+| `server/routes/session.ts`           | Session CRUD（内存存储）                                   |
+| `server/routes/generate.ts`          | POST /api/generate — 全链路生成（LLM→IR→Layout→XML）       |
+| `server/routes/validate.ts`          | POST /api/validate — 静态几何校验                          |
+| `server/routes/layout.ts`            | POST /api/layout — IR → 布局 + 序列化                      |
+| `server/routes/proxy/llm-proxy.ts`   | POST /api/proxy/llm — 浏览器直连 LLM API 的代理            |
+| `src/`                               | React SPA 前端                                             |
+| `src/App.tsx`                        | 根组件，路由配置                                           |
+| `src/main.tsx`                       | ReactDOM.createRoot 入口                                   |
+| `src/components/Header.tsx`          | 顶栏：Logo + 主题切换 + 设置入口                           |
+| `src/components/Layout.tsx`          | 页面外壳                                                   |
+| `src/components/ChatPanel/`          | 左侧对话面板                                               |
+| `src/components/PreviewPanel/`       | 右侧预览面板 + draw.io embed                               |
+| `src/components/Settings/`           | 设置弹窗（API Key / Provider / Model）                     |
+| `src/components/common/`             | 通用 UI 组件（Button / Modal / Select / Spinner）          |
+| `src/pages/HomePage.tsx`             | 主页（ChatPanel + PreviewPanel 双栏）                      |
+| `src/pages/SettingsPage.tsx`         | 独立设置页                                                 |
+| `src/pages/PreviewPage.tsx`          | 纯预览页（供 MCP Server 跳转）                             |
+| `src/services/api-client.ts`         | fetch 封装（Base URL + 错误处理）                          |
+| `src/services/core-bridge.ts`        | 核心 API 调用的类型化封装                                  |
+| `src/stores/config-store.ts`         | Zustand store（API Key / Provider / Theme → localStorage） |
+| `src/stores/session-store.ts`        | Zustand store（会话 / 消息 / XML）                         |
+| `src/hooks/useGenerate.ts`           | 生成流程 Hook（调用 API → 更新 store → 更新步骤）          |
+| `src/hooks/useDrawioEmbed.ts`        | draw.io embed postMessage 通信 Hook                        |
+| `src/hooks/useTheme.ts`              | 暗色模式 Hook                                              |
+| `src/types/chat.ts`                  | 前端类型定义（ChatMessage / StepState）                    |
+| `src/utils/download.ts`              | 浏览器下载 / 剪贴板工具函数                                |
 
 ## 架构
 
@@ -49,7 +49,7 @@ Browser (React SPA)
     ├── Vite Dev Server (port 3000) ──proxy──▶ Express API Server (port 3001)
     │                                              │
     │                                              ├── Session Manager (in-memory Map)
-    │                                              ├── @ai-diagram/core (layout/serialize/validate)
+    │                                              ├── @speakdraw/core (layout/serialize/validate)
     │                                              └── LLM Proxy (fetch → OpenAI/Anthropic/DeepSeek/Hunyuan)
     │
     └── draw.io Embed (iframe postMessage)
@@ -78,9 +78,9 @@ Browser (React SPA)
 
 ## 依赖关系
 
-- `@ai-diagram/core`（服务端：布局 / 序列化 / 校验）
-- `@ai-diagram/shared`（类型 + Schema）
-- 不依赖 `@ai-diagram/mcp-server` 或 `ai-diagram`（CLI）
+- `@speakdraw/core`（服务端：布局 / 序列化 / 校验）
+- `@speakdraw/shared`（类型 + Schema）
+- 不依赖 `@speakdraw/mcp-server` 或 `speakdraw`（CLI）
 
 ## 开发命令
 

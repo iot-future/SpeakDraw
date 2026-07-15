@@ -9,8 +9,8 @@ import {
   LLMSchemaMismatchError,
   LLMInvalidInputError,
   LLMMissingKeyError,
-} from '@ai-diagram/core';
-import type { LayoutOptions } from '@ai-diagram/shared';
+} from '@speakdraw/core';
+import type { LayoutOptions } from '@speakdraw/shared';
 import { loadConfig, parseEnvApiKey } from '../config';
 import { createLogger, type CliLogger } from '../utils/logger';
 
@@ -30,7 +30,7 @@ export interface GenerateOptions {
 }
 
 /**
- * 执行 `ai-diagram generate` 命令。
+ * 执行 'speakdraw generate` 命令。
  *
  * @param description - 自然语言描述（与 file 至少有一个非空）
  * @param options - 命令选项
@@ -79,9 +79,9 @@ export async function runGenerate(description: string, options: GenerateOptions)
   let spinner = log.startSpinner('正在调用 LLM 提取语义关系...');
 
   // 保存并设置 model 环境变量（核心库的 provider 通过 env 读取 model 名）
-  const prevModel = options.model ? process.env['AI_DIAGRAM_MODEL'] : undefined;
+  const prevModel = options.model ? process.env['SPEAKDRAW_MODEL'] : undefined;
   if (options.model) {
-    process.env['AI_DIAGRAM_MODEL'] = options.model;
+    process.env['SPEAKDRAW_MODEL'] = options.model;
   }
 
   try {
@@ -117,8 +117,8 @@ export async function runGenerate(description: string, options: GenerateOptions)
   } finally {
     // 恢复 env var，避免污染后续调用
     if (options.model) {
-      if (prevModel === undefined) delete process.env['AI_DIAGRAM_MODEL'];
-      else process.env['AI_DIAGRAM_MODEL'] = prevModel;
+      if (prevModel === undefined) delete process.env['SPEAKDRAW_MODEL'];
+      else process.env['SPEAKDRAW_MODEL'] = prevModel;
     }
   }
 }

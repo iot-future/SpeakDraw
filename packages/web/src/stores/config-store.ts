@@ -18,14 +18,17 @@ interface ConfigState {
   getHeaders: () => Record<string, string>;
 }
 
-type PersistedState = Pick<ConfigState, 'apiKey' | 'provider' | 'model' | 'layoutDirection' | 'theme'>;
+type PersistedState = Pick<
+  ConfigState,
+  'apiKey' | 'provider' | 'model' | 'layoutDirection' | 'theme'
+>;
 
 const STORAGE_KEYS: Record<keyof PersistedState, string> = {
-  apiKey: 'ai-diagram-api-key',
-  provider: 'ai-diagram-provider',
-  model: 'ai-diagram-model',
-  layoutDirection: 'ai-diagram-layout-direction',
-  theme: 'ai-diagram-theme',
+  apiKey: 'speakdraw-api-key',
+  provider: 'speakdraw-provider',
+  model: 'speakdraw-model',
+  layoutDirection: 'speakdraw-layout-direction',
+  theme: 'speakdraw-theme',
 };
 
 const customStorage: PersistStorage<PersistedState> = {
@@ -73,22 +76,21 @@ export const useConfigStore = create<ConfigState>()(
       model: DEFAULT_MODELS['openai'],
       layoutDirection: 'TB' as const,
       theme: 'system' as Theme,
-      setApiKey: (apiKey: string) => set({ apiKey }),
-      setProvider: (provider: Provider) =>
-        set({ provider, model: DEFAULT_MODELS[provider] }),
-      setModel: (model: string) => set({ model }),
-      setLayoutDirection: (layoutDirection: 'LR' | 'TB') => set({ layoutDirection }),
-      setTheme: (theme: Theme) => set({ theme }),
-      getHeaders: () => {
+      setApiKey: (apiKey: string): void => set({ apiKey }),
+      setProvider: (provider: Provider): void => set({ provider, model: DEFAULT_MODELS[provider] }),
+      setModel: (model: string): void => set({ model }),
+      setLayoutDirection: (layoutDirection: 'LR' | 'TB'): void => set({ layoutDirection }),
+      setTheme: (theme: Theme): void => set({ theme }),
+      getHeaders: (): Record<string, string> => {
         const { apiKey, provider } = get();
         return {
-          'Authorization': apiKey ? `Bearer ${apiKey}` : '',
+          Authorization: apiKey ? `Bearer ${apiKey}` : '',
           'X-Provider': provider,
         };
       },
     }),
     {
-      name: 'ai-diagram-config',
+      name: 'speakdraw-config',
       storage: customStorage,
       partialize: (state) => ({
         apiKey: state.apiKey,

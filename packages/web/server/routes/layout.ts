@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { layoutDiagram, serialize } from '@ai-diagram/core';
-import { irDiagramSchema } from '@ai-diagram/shared';
+import { layoutDiagram, serialize } from '@speakdraw/core';
+import { irDiagramSchema } from '@speakdraw/shared';
 
 const layoutRequestSchema = z.object({
   ir: irDiagramSchema,

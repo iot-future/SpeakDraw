@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
-import type { IRDiagram, LayoutResult } from '@ai-diagram/shared';
-import { AppError } from '@ai-diagram/shared';
+import type { IRDiagram, LayoutResult } from '@speakdraw/shared';
+import { AppError } from '@speakdraw/shared';
 import { serialize } from './drawio-serializer';
 import type { SerializeOptions } from './drawio-serializer';
 

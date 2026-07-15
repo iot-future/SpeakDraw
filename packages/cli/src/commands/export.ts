@@ -10,7 +10,7 @@ export interface ExportOptions {
 }
 
 /**
- * 执行 `ai-diagram export` 命令。
+ * 执行 'speakdraw export` 命令。
  *
  * Phase 1 初始实现为占位，不实际渲染。
  * 后续 Phase 3 集成 diagrams.net docker 自托管渲染或客户端导出。

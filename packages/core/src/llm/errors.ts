@@ -1,8 +1,7 @@
-import { AppError } from '@ai-diagram/shared';
+import { AppError } from '@speakdraw/shared';
 
 /**
- * LLM 调用不可达 — 网络错误、DNS 解析失败、连接超时。
- * 终端用户应检查网络与 API endpoint。
+ * LLM call unreachable — network error, DNS failure, connection timeout.
  */
 export class LLMUnreachableError extends AppError {
   public override readonly name = 'LLMUnreachableError';
@@ -12,7 +11,7 @@ export class LLMUnreachableError extends AppError {
 }
 
 /**
- * LLM 超时 — 单次调用超出配置的时间限制（默认 30s）。
+ * LLM timeout — single call exceeded configured time limit (default 30s).
  */
 export class LLMTimeoutError extends AppError {
   public override readonly name = 'LLMTimeoutError';
@@ -22,8 +21,7 @@ export class LLMTimeoutError extends AppError {
 }
 
 /**
- * LLM 拒绝 — 模型安全策略拒绝处理该请求。
- * 可能原因：输入内容触发 safety filter。
+ * LLM refusal — model safety policy rejected the request.
  */
 export class LLMRefusalError extends AppError {
   public override readonly name = 'LLMRefusalError';
@@ -33,8 +31,7 @@ export class LLMRefusalError extends AppError {
 }
 
 /**
- * Schema 不匹配 — LLM 产出的 JSON 经 zod 校验失败，且重试耗尽。
- * 终端用户应补充或修正输入描述。
+ * Schema mismatch — LLM output failed validation after all retries exhausted.
  */
 export class LLMSchemaMismatchError extends AppError {
   public override readonly name = 'LLMSchemaMismatchError';
@@ -48,7 +45,7 @@ export class LLMSchemaMismatchError extends AppError {
 }
 
 /**
- * 参数无效 — 用户侧输入问题（如空文本）。
+ * Invalid input — user-side input issue (e.g. empty text).
  */
 export class LLMInvalidInputError extends AppError {
   public override readonly name = 'LLMInvalidInputError';
@@ -58,7 +55,7 @@ export class LLMInvalidInputError extends AppError {
 }
 
 /**
- * 无 API Key 配置。
+ * No API key configured.
  */
 export class LLMMissingKeyError extends AppError {
   public override readonly name = 'LLMMissingKeyError';

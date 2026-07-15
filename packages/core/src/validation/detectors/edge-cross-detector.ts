@@ -1,5 +1,5 @@
 // packages/core/src/validation/detectors/edge-cross-detector.ts
-import type { GeometryParseResult, ValidationConflict } from '@ai-diagram/shared';
+import type { GeometryParseResult, ValidationConflict } from '@speakdraw/shared';
 import { linesIntersect, nextConflictId } from './math-utils';
 
 /**

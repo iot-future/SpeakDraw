@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// --- 枚举 ---
+// --- Enums ---
 
 export const nodeTypeEnum = z.enum([
   'entity',
@@ -22,7 +22,7 @@ export const edgeTypeEnum = z.enum([
   'flow',
 ]);
 
-/** ER 图关系基数校验（Crow's Foot Notation） */
+/** ER diagram cardinality validation (Crow's Foot Notation) */
 export const cardinalitySchema = z.enum(['1', '0..1', '*', '1..*', '0..*']).optional();
 
 export const groupTypeEnum = z.enum(['container', 'swimlane', 'layer']);
@@ -31,7 +31,7 @@ export const diagramTypeEnum = z.enum(['er', 'flowchart']);
 
 export const directionEnum = z.enum(['LR', 'TB', 'RL', 'BT']);
 
-// --- 基本 Schema ---
+// --- Base Schemas ---
 
 export const irNodeSchema = z.object({
   id: z.string().min(1),
@@ -65,7 +65,7 @@ export const irGroupSchema = z.object({
   type: groupTypeEnum,
 });
 
-// --- IRDiagram 带跨字段校验 ---
+// --- IRDiagram with cross-field validation ---
 
 export const irDiagramSchema = z
   .object({
@@ -79,51 +79,51 @@ export const irDiagramSchema = z
     const nodeIds = new Set(data.nodes.map((n) => n.id));
     const groupIds = new Set(data.groups?.map((g) => g.id) ?? []);
 
-    // 校验节点 id 不重复（Zod 默认不做，显式检查）
+    // Validate no duplicate node ids (Zod does not do this by default)
     if (data.nodes.length !== nodeIds.size) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: '节点 id 存在重复',
+        message: 'Duplicate node ids detected',
         path: ['nodes'],
       });
     }
 
-    // 校验边的 source/target 引用存在的节点
+    // Validate edge source/target reference existing nodes
     for (let i = 0; i < data.edges.length; i++) {
       const edge = data.edges[i]!;
       if (!nodeIds.has(edge.source)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `边 "${edge.id}" 的 source "${edge.source}" 引用了不存在的节点`,
+          message: `Edge "${edge.id}" source "${edge.source}" references non-existent node`,
           path: ['edges', i, 'source'],
         });
       }
       if (!nodeIds.has(edge.target)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `边 "${edge.id}" 的 target "${edge.target}" 引用了不存在的节点`,
+          message: `Edge "${edge.id}" target "${edge.target}" references non-existent node`,
           path: ['edges', i, 'target'],
         });
       }
     }
 
-    // 校验节点的 group 引用存在的分组
+    // Validate node group references exist
     for (let i = 0; i < data.nodes.length; i++) {
       const node = data.nodes[i]!;
       if (node.group && !groupIds.has(node.group)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `节点 "${node.id}" 的 group "${node.group}" 引用了不存在的分组`,
+          message: `Node "${node.id}" group "${node.group}" references non-existent group`,
           path: ['nodes', i, 'group'],
         });
       }
     }
 
-    // 校验分组 id 不重复
+    // Validate no duplicate group ids
     if (data.groups && data.groups.length !== groupIds.size) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: '分组 id 存在重复',
+        message: 'Duplicate group ids detected',
         path: ['groups'],
       });
     }

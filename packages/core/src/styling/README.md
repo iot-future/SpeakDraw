@@ -2,7 +2,7 @@
 
 ## 职责
 
-负责将 AI-Diagram 中间表示（IR）中的节点/边/分组类型转换为 draw.io mxCell 的 style 属性字符串。本模块是"类型 → 视觉样式"的编译层，不涉及布局坐标计算。
+负责将 SpeakDraw 中间表示（IR）中的节点/边/分组类型转换为 draw.io mxCell 的 style 属性字符串。本模块是"类型 → 视觉样式"的编译层，不涉及布局坐标计算。
 
 ## 目录结构
 
@@ -72,7 +72,7 @@ Cardinality → CardinalityMarker → draw.io 视觉表现
 
 | 依赖                            | 用途                                                                                     |
 | ------------------------------- | ---------------------------------------------------------------------------------------- |
-| `@ai-diagram/shared`            | 类型定义（`NodeType`、`EdgeType`、`GroupType`、`Cardinality`、`IRDiagram`）              |
+| `@speakdraw/shared`             | 类型定义（`NodeType`、`EdgeType`、`GroupType`、`Cardinality`、`IRDiagram`）              |
 | `packages/core/src/serializer/` | **被依赖** — serializer 调用 `buildEdgeStyleMap` / `buildNodeStyleMap` 获取 style 字符串 |
 
 本模块不依赖任何后端/前端框架，是纯函数式编译层。

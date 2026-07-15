@@ -1,5 +1,5 @@
-import { serialize, layoutDiagram } from '@ai-diagram/core';
-import type { IRDiagram, IRNode, IREdge } from '@ai-diagram/shared';
+import { serialize, layoutDiagram } from '@speakdraw/core';
+import type { IRDiagram, IRNode, IREdge } from '@speakdraw/shared';
 import type { ToolHandler } from '../mcp-types.js';
 import type { CellInfo } from '../session/session.types.js';
 

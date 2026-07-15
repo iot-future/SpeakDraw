@@ -1,4 +1,4 @@
-import type { PortSide } from '@ai-diagram/shared';
+import type { PortSide } from '@speakdraw/shared';
 
 /**
  * draw.io 的 exit（源端口）或 entry（目标端口）坐标。

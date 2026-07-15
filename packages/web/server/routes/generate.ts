@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { layoutDiagram, serialize } from '@ai-diagram/core';
-import type { IRDiagram } from '@ai-diagram/shared';
+import { layoutDiagram, serialize } from '@speakdraw/core';
+import type { IRDiagram } from '@speakdraw/shared';
+import { logger } from '../utils/logger';
 import { createSession, getSession } from './session';
 import { callLLM } from './proxy/llm-proxy';
 
@@ -69,7 +70,7 @@ generateRouter.post('/', async (req, res) => {
 
     res.json({ sessionId: session.id, xml, ir, layout });
   } catch (err) {
-    console.error('Generate error:', err);
+    logger.error('Generate error', err instanceof Error ? err : new Error(String(err)));
     res.status(500).json({ error: { code: 'GENERATE_FAILED', message: String(err) } });
   }
 });

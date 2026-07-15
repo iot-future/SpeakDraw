@@ -1,5 +1,5 @@
 import type { ElkNode, ElkExtendedEdge, ElkPort } from 'elkjs/lib/elk.bundled';
-import type { IRDiagram, IRNode, IREdge, LayoutOptions, PortSide } from '@ai-diagram/shared';
+import type { IRDiagram, IRNode, IREdge, LayoutOptions, PortSide } from '@speakdraw/shared';
 
 /** 默认布局参数（仅含本模块消费的字段，padding 由 elk-layouter.ts 单独管理） */
 const DEFAULTS = {
@@ -170,10 +170,6 @@ function createPorts(nodeId: string, edgeCount?: number): ElkPort[] {
         id: `${nodeId}_${side}_${i}`,
         width: 5,
         height: 5,
-        properties: {
-          'port.side': side,
-          'port.index': String(i),
-        },
       });
     }
   }

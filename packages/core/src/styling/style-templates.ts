@@ -1,4 +1,4 @@
-import type { NodeType, EdgeType, GroupType, Cardinality } from '@ai-diagram/shared';
+import type { NodeType, EdgeType, GroupType, Cardinality } from '@speakdraw/shared';
 
 /**
  * 分组容器样式模板（对齐 PRD S3-06）。

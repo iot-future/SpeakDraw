@@ -1,5 +1,5 @@
 // packages/core/src/validation/adapters/static-validator-impl.ts
-import type { ValidationReport, ValidationOptions, GeometryParseResult } from '@ai-diagram/shared';
+import type { ValidationReport, ValidationOptions, GeometryParseResult } from '@speakdraw/shared';
 import type { ValidationPort } from '../ports/validation';
 import { parseGeometry } from '../geometry-parser';
 import { detectOverlaps } from '../detectors/overlap-detector';

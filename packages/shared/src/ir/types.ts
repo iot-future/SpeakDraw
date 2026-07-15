@@ -1,81 +1,81 @@
-/** 节点类型枚举 */
+/** Node type enum */
 export type NodeType =
   'entity' | 'service' | 'decision' | 'process' | 'dataStore' | 'note' | 'actor' | 'generic';
 
-/** 节点定义 */
+/** Node definition */
 export interface IRNode {
-  /** 唯一标识（必填） */
+  /** Unique identifier (required) */
   id: string;
-  /** 显示标签（必填） */
+  /** Display label (required) */
   label: string;
-  /** 多行标签（可选，按 \n 拆分后的行数组）。用于节点尺寸自适应估算。 */
+  /** Multi-line labels (optional, split by \n). Used for node size estimation. */
   labelRows?: string[];
-  /** 节点类型（必填） */
+  /** Node type (required) */
   type: NodeType;
-  /** 所属分组 id（可选） */
+  /** Parent group id (optional) */
   group?: string;
-  /** 手动指定节点尺寸（可选），覆盖自动估算。width 和 height 均为可选，指定哪个用哪个。 */
+  /** Manual node size override (optional). Overrides auto-estimation. */
   size?: { width?: number; height?: number };
-  /** 扩展元数据（可选） */
+  /** Extension metadata (optional) */
   metadata?: Record<string, unknown>;
 }
 
-/** 边类型枚举 */
+/** Edge type enum */
 export type EdgeType =
   'association' | 'inheritance' | 'aggregation' | 'composition' | 'foreignKey' | 'flow';
 
-/** ER 图关系基数（Crow's Foot Notation） */
+/** ER diagram cardinality (Crow's Foot Notation) */
 export type Cardinality = '1' | '0..1' | '*' | '1..*' | '0..*';
 
-/** 边定义 */
+/** Edge definition */
 export interface IREdge {
-  /** 唯一标识（必填） */
+  /** Unique identifier (required) */
   id: string;
-  /** 源节点 id（必填） */
+  /** Source node id (required) */
   source: string;
-  /** 目标节点 id（必填） */
+  /** Target node id (required) */
   target: string;
-  /** 边标签（可选） */
+  /** Edge label (optional) */
   label?: string;
-  /** 边类型（必填） */
+  /** Edge type (required) */
   type: EdgeType;
-  /** 源端基数（可选，仅 ER 图 foreignKey 边生效） */
+  /** Source cardinality (optional, only effective for ER foreignKey edges) */
   sourceCardinality?: Cardinality;
-  /** 目标端基数（可选，仅 ER 图 foreignKey 边生效） */
+  /** Target cardinality (optional, only effective for ER foreignKey edges) */
   targetCardinality?: Cardinality;
-  /** 扩展元数据（可选） */
+  /** Extension metadata (optional) */
   metadata?: Record<string, unknown>;
 }
 
-/** 分组类型枚举 */
+/** Group type enum */
 export type GroupType = 'container' | 'swimlane' | 'layer';
 
-/** 分组定义 */
+/** Group definition */
 export interface IRGroup {
-  /** 唯一标识（必填） */
+  /** Unique identifier (required) */
   id: string;
-  /** 显示标签（必填） */
+  /** Display label (required) */
   label: string;
-  /** 分组类型（必填） */
+  /** Group type (required) */
   type: GroupType;
 }
 
-/** 图类型枚举 */
+/** Diagram type enum */
 export type DiagramType = 'er' | 'flowchart';
 
-/** 布局方向枚举 */
+/** Layout direction enum */
 export type Direction = 'LR' | 'TB' | 'RL' | 'BT';
 
-/** 图顶层结构 */
+/** Top-level diagram structure */
 export interface IRDiagram {
-  /** 图类型（必填） */
+  /** Diagram type (required) */
   type: DiagramType;
-  /** 布局方向（必填） */
+  /** Layout direction (required) */
   direction: Direction;
-  /** 节点列表（必填） */
+  /** Node list (required) */
   nodes: IRNode[];
-  /** 边列表（必填） */
+  /** Edge list (required) */
   edges: IREdge[];
-  /** 分组列表（可选） */
+  /** Group list (optional) */
   groups?: IRGroup[];
 }

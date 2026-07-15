@@ -1,5 +1,5 @@
 // 向后兼容：重导出到新的序列化器实现
-import type { IRDiagram, LayoutResult } from '@ai-diagram/shared';
+import type { IRDiagram, LayoutResult } from '@speakdraw/shared';
 import { serialize } from './drawio-serializer';
 import type { SerializeOptions } from './drawio-serializer';
 

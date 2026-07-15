@@ -1,6 +1,6 @@
 /**
- * 应用错误基类 — 所有跨模块抛出的异常必须继承此类。
- * 携带稳定错误码（code），调用方按码处理，不依赖 message 文本。
+ * Application error base class — all exceptions thrown across modules MUST extend this.
+ * Carries a stable error code (`code`); callers handle by code, not by message text.
  */
 export class AppError extends Error {
   public override readonly name: string = 'AppError';

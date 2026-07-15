@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { AppError } from '@ai-diagram/shared';
+import { AppError } from '@speakdraw/shared';
+import { logger } from '../utils/logger';
 
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
   if (err instanceof AppError) {
@@ -8,7 +9,7 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     });
     return;
   }
-  console.error('Unhandled error:', err);
+  logger.error('Unhandled error', err);
   res.status(500).json({
     error: { code: 'INTERNAL_ERROR', message: 'Internal server error' },
   });

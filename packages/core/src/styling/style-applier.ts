@@ -1,4 +1,4 @@
-import type { IRDiagram } from '@ai-diagram/shared';
+import type { IRDiagram } from '@speakdraw/shared';
 import type { NodeStyleTemplate, EdgeStyleTemplate, GroupStyleTemplate } from './style-templates';
 import {
   NODE_STYLE_TEMPLATES,

@@ -16,7 +16,7 @@ export const exportDiagramHandler: ToolHandler = async (args, sessionManager) =>
   if (!session) throw new Error(`Session not found: ${sessionId}`);
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const filename = `ai-diagram-${sessionId.slice(0, 8)}-${timestamp}.${format}`;
+  const filename = `speakdraw-${sessionId.slice(0, 8)}-${timestamp}.${format}`;
   const outputDir = join(homedir(), 'Downloads');
   const filePath = join(outputDir, filename);
 

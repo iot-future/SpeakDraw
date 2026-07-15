@@ -1,42 +1,42 @@
-import type { IRDiagram } from '@ai-diagram/shared';
-import { irDiagramSchema } from '@ai-diagram/shared';
-import type { LLMProvider, GenerateIROptions } from './ports/llm-provider';
-import { LLMInvalidInputError, LLMSchemaMismatchError } from './errors';
+import type { IRDiagram } from '@speakdraw/shared';
+import { irDiagramSchema } from '@speakdraw/shared';
+import type { LLMProvider, GenerateIROptions } from './ports/llm-provider.js';
+import { LLMInvalidInputError, LLMSchemaMismatchError } from './errors.js';
 
 /**
- * 语义提取器函数签名：自然语言 → IRDiagram。
+ * Semantic extractor function signature: natural language → IRDiagram.
  */
 export type SemanticExtractor = (text: string, options?: GenerateIROptions) => Promise<IRDiagram>;
 
 /**
- * 创建语义提取器。
- * 组合 LLM Provider 调用 + 最终 schema 兜底校验。
+ * Create a semantic extractor.
+ * Composes LLM Provider call + final schema safeguard validation.
  *
- * @param provider - LLM Provider 实例
- * @returns SemanticExtractor 函数
+ * @param provider - LLM Provider instance
+ * @returns SemanticExtractor function
  *
  * @example
  * ```ts
- * import { createProvider } from './provider-factory';
- * import { createSemanticExtractor } from './semantic-extractor.service';
+ * import { createProvider } from './provider-factory.js';
+ * import { createSemanticExtractor } from './semantic-extractor.service.js';
  *
  * const provider = createProvider('openai');
  * const textToIR = createSemanticExtractor(provider);
- * const ir = await textToIR('用户表和订单表，一对多关系');
+ * const ir = await textToIR('A user table and order table, one-to-many relationship');
  * ```
  */
 export function createSemanticExtractor(provider: LLMProvider): SemanticExtractor {
   return async (text: string, options?: GenerateIROptions): Promise<IRDiagram> => {
-    // 入参校验
+    // Input validation
     const trimmed = text.trim();
     if (!trimmed) {
       throw new LLMInvalidInputError('Input text must not be empty');
     }
 
-    // 调用 provider（含内置 schema 校验与重试）
+    // Call provider (with built-in schema validation & retry)
     const ir = await provider.generateIR(trimmed, options);
 
-    // 二次兜底校验（即使 generateIR 内部已校验，入口层也做一遍保底）
+    // Secondary safeguard validation (even though generateIR validates internally)
     const parsed = irDiagramSchema.safeParse(ir);
     if (!parsed.success) {
       const issues = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
@@ -48,19 +48,15 @@ export function createSemanticExtractor(provider: LLMProvider): SemanticExtracto
 }
 
 /**
- * 便捷入口：使用默认 provider（从环境变量 LLM_PROVIDER 读取，默认 openai）的 textToIR。
+ * Convenience entry: textToIR using the default provider (from env LLM_PROVIDER, default "openai").
  *
- * 环境变量：
- * - `LLM_PROVIDER`: provider 名称（"openai" | "anthropic"，默认 "openai"）
- * - 各 provider 专用的 API Key 环境变量
- *
- * @param text - 自然语言描述
- * @param options - 可选配置
- * @returns 校验通过的 IRDiagram
+ * @param text - Natural language description
+ * @param options - Optional configuration
+ * @returns Validated IRDiagram
  */
 export async function textToIR(text: string, options?: GenerateIROptions): Promise<IRDiagram> {
-  // 延迟 import 避免循环依赖
-  const { createProvider } = await import('./provider-factory');
+  // Lazy import to avoid circular dependency
+  const { createProvider } = await import('./provider-factory.js');
   const providerName = process.env['LLM_PROVIDER'] ?? 'openai';
   const provider = createProvider(providerName);
   const extractor = createSemanticExtractor(provider);

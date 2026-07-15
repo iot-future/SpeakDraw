@@ -1,19 +1,18 @@
-// packages/core/src/validation/ports/validation.ts
-import type { ValidationReport, ValidationOptions } from '@ai-diagram/shared';
+import type { ValidationOptions, ValidationReport } from '@speakdraw/shared';
 
 /**
- * 校验端口接口。
+ * Validation port interface.
  *
- * 定义对 draw.io XML 进行静态几何校验的契约。
- * 不同实现可提供不同的检测策略（静态 AABB / VLM 视觉 / 等）。
+ * Defines the contract for static geometry validation of draw.io XML.
+ * Different implementations provide different detection strategies (static AABB / VLM visual / etc.).
  */
 export interface ValidationPort {
   /**
-   * 对 draw.io XML 执行静态几何校验。
+   * Perform static geometry validation on draw.io XML.
    *
-   * @param xml - draw.io mxGraphModel XML 字符串
-   * @param options - 校验选项（容忍误差、是否启用标签检测等）
-   * @returns 校验报告（含冲突列表与通过状态）
+   * @param xml - draw.io mxGraphModel XML string
+   * @param options - Validation options (tolerance, label detection, etc.)
+   * @returns Validation report with conflict list and pass/fail status
    */
   validate(xml: string, options?: ValidationOptions): ValidationReport;
 }

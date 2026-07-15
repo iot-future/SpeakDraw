@@ -1,5 +1,5 @@
 import { mapPortToDrawio } from '../layout/port-mapping';
-import type { PortSide } from '@ai-diagram/shared';
+import type { PortSide } from '@speakdraw/shared';
 
 /**
  * 转义 XML 特殊字符（`<` `>` `&` `"` `'`）。
@@ -196,7 +196,7 @@ export function wrapMxGraphModel(
     const trimmedCells = cells.map((c) => c.trim());
     const body = [
       '<?xml version="1.0" encoding="UTF-8"?>',
-      `<mxfile host="ai-diagram" modified="${modified}" agent="ai-diagram" type="device">`,
+      `<mxfile host="speakdraw" modified="${modified}" agent="speakdraw" type="device">`,
       `<diagram id="${options.diagramId ?? 'diagram-1'}" name="${escapeXml(options.diagramName ?? 'Page-1')}">`,
       '<mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">',
       '<root>',
@@ -212,7 +212,7 @@ export function wrapMxGraphModel(
   // Pretty 模式（默认）
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    `<mxfile host="ai-diagram" modified="${modified}" agent="ai-diagram" type="device">`,
+    `<mxfile host="speakdraw" modified="${modified}" agent="speakdraw" type="device">`,
     `  <diagram id="${options.diagramId ?? 'diagram-1'}" name="${escapeXml(options.diagramName ?? 'Page-1')}">`,
     '    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">',
     '      <root>',

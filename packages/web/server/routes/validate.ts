@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { StaticValidatorImpl } from '@ai-diagram/core';
+import { StaticValidatorImpl } from '@speakdraw/core';
 
 const validateRequestSchema = z.object({
   xml: z.string().min(1),

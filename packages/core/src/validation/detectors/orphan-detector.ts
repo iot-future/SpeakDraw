@@ -1,5 +1,5 @@
 // packages/core/src/validation/detectors/orphan-detector.ts
-import type { GeometryParseResult, ValidationConflict } from '@ai-diagram/shared';
+import type { GeometryParseResult, ValidationConflict } from '@speakdraw/shared';
 import { nextConflictId } from './math-utils';
 
 /**

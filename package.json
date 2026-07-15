@@ -1,9 +1,10 @@
 {
-  "name": "ai-diagram",
-  "version": "0.1.0",
+  "name": "speakdraw",
+  "version": "0.2.2",
   "private": true,
-  "description": "基于 LLM + ELK 的自动布局画图工具",
+  "description": "SpeakDraw — 自然语言驱动的智能画图工具",
   "scripts": {
+    "build": "pnpm -r --if-present run build",
     "lint": "eslint . --ext .ts,.tsx --ignore-pattern node_modules --ignore-pattern dist",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

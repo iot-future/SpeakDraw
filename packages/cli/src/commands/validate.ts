@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { StaticValidatorImpl } from '@ai-diagram/core';
+import { StaticValidatorImpl } from '@speakdraw/core';
 import { createLogger } from '../utils/logger';
 
 export interface ValidateOptions {
@@ -12,7 +12,7 @@ export interface ValidateOptions {
 }
 
 /**
- * 执行 `ai-diagram validate` 命令。
+ * 执行 'speakdraw validate` 命令。
  *
  * @param filePath - .drawio 文件路径
  * @param options - 命令选项

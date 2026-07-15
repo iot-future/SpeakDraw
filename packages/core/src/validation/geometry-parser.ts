@@ -5,7 +5,7 @@ import type {
   GeometricEdge,
   GeometryParseResult,
   LineSegment,
-} from '@ai-diagram/shared';
+} from '@speakdraw/shared';
 
 /**
  * XML 中 mxCell 元素的原始类型。

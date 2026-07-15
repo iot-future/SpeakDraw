@@ -1,12 +1,12 @@
-export { layoutDiagram } from './layout/elk-layouter';
-export { convertIRToELK, estimateNodeSize } from './layout/ir-to-elk';
-export { mapPortToDrawio, PORT_SIDE_MATRIX } from './layout/port-mapping';
-export type { DrawioPortCoords } from './layout/port-mapping';
+export { layoutDiagram } from './layout/elk-layouter.js';
+export { convertIRToELK, estimateNodeSize } from './layout/ir-to-elk.js';
+export { mapPortToDrawio, PORT_SIDE_MATRIX } from './layout/port-mapping.js';
+export type { DrawioPortCoords } from './layout/port-mapping.js';
 
-// 序列化器（新版 + 旧版兼容）
-export { serialize, serializeToDrawioXml } from './serializer/drawio-xml';
-export type { SerializeOptions } from './serializer/drawio-serializer';
-export { serializeToFile } from './serializer/file-writer';
+// Serializers (new + legacy compat)
+export { serialize, serializeToDrawioXml } from './serializer/drawio-xml.js';
+export type { SerializeOptions } from './serializer/drawio-serializer.js';
+export { serializeToFile } from './serializer/file-writer.js';
 export {
   buildRootCells,
   buildNodeCell,
@@ -14,9 +14,9 @@ export {
   buildContainerCell,
   wrapMxGraphModel,
   escapeXml,
-} from './serializer/mxgraph-builder';
+} from './serializer/mxgraph-builder.js';
 
-// 样式系统
+// Style system
 export {
   NODE_STYLE_TEMPLATES,
   EDGE_STYLE_TEMPLATES,
@@ -25,13 +25,13 @@ export {
   DEFAULT_EDGE_STYLE,
   CARDINALITY_TO_MARKER,
   ER_EDGE_STYLE,
-} from './styling/style-templates';
+} from './styling/style-templates.js';
 export type {
   NodeStyleTemplate,
   EdgeStyleTemplate,
   GroupStyleTemplate,
   CardinalityMarker,
-} from './styling/style-templates';
+} from './styling/style-templates.js';
 export {
   compileNodeStyle,
   compileEdgeStyle,
@@ -41,9 +41,9 @@ export {
   buildNodeStyleMap,
   buildEdgeStyleMap,
   buildGroupStyleMap,
-} from './styling/style-applier';
+} from './styling/style-applier.js';
 
-// LLM 模块
+// LLM module
 export {
   type LLMProvider,
   type GenerateIROptions,
@@ -63,22 +63,22 @@ export {
   LLMSchemaMismatchError,
   LLMInvalidInputError,
   LLMMissingKeyError,
-} from './llm';
+} from './llm/index.js';
 
-// 校验模块
-export { parseGeometry } from './validation/geometry-parser';
-export type { ValidationPort } from './validation/ports/validation';
-export { StaticValidatorImpl } from './validation/adapters/static-validator-impl';
+// Validation module
+export { parseGeometry } from './validation/geometry-parser.js';
+export type { ValidationPort } from './validation/ports/validation.js';
+export { StaticValidatorImpl } from './validation/adapters/static-validator-impl.js';
 export {
   detectOverlaps,
   detectEdgeThroughNode,
   detectOrphans,
   detectEdgeCrosses,
   detectLabelOverflow,
-} from './validation/detectors';
+} from './validation/detectors/index.js';
 export {
   aabbOverlap,
   segmentIntersectsBBox,
   linesIntersect,
-} from './validation/detectors/math-utils';
-export { smartFix } from './validation/smart-fix';
+} from './validation/detectors/math-utils.js';
+export { smartFix } from './validation/smart-fix.js';

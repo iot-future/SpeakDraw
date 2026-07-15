@@ -6,9 +6,9 @@ import type {
   LayoutEdge,
   PortSide,
   LayoutOptions,
-} from '@ai-diagram/shared';
+} from '@speakdraw/shared';
 import type { ElkNode } from 'elkjs/lib/elk.bundled';
-import { irDiagramSchema } from '@ai-diagram/shared';
+import { irDiagramSchema } from '@speakdraw/shared';
 import { convertIRToELK } from './ir-to-elk';
 
 const elk = new ELK();

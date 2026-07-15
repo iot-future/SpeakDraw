@@ -29,12 +29,12 @@ const DEFAULTS: CliConfig = {
 };
 
 /**
- * 尝试从 cwd 加载 `ai-diagram.config.json`（可选）。
+ * 尝试从 cwd 加载 `speakdraw.config.json`（可选）。
  * 文件不存在时返回空对象，不抛错。
  */
 function loadConfigFile(cwd: string): Partial<CliConfig> {
   try {
-    const raw = readFileSync(resolve(cwd, 'ai-diagram.config.json'), 'utf-8');
+    const raw = readFileSync(resolve(cwd, 'speakdraw.config.json'), 'utf-8');
     return JSON.parse(raw) as Partial<CliConfig>;
   } catch {
     return {};
@@ -46,11 +46,11 @@ function loadConfigFile(cwd: string): Partial<CliConfig> {
  */
 function loadEnvConfig(): Partial<CliConfig> {
   const cfg: Partial<CliConfig> = {};
-  if (process.env['AI_DIAGRAM_PROVIDER']) cfg.provider = process.env['AI_DIAGRAM_PROVIDER'];
-  if (process.env['AI_DIAGRAM_MODEL']) cfg.model = process.env['AI_DIAGRAM_MODEL'];
-  if (process.env['AI_DIAGRAM_OUTPUT_DIR']) cfg.outputDir = process.env['AI_DIAGRAM_OUTPUT_DIR'];
-  if (process.env['AI_DIAGRAM_DIRECTION']) {
-    const dir = process.env['AI_DIAGRAM_DIRECTION'];
+  if (process.env['SPEAKDRAW_PROVIDER']) cfg.provider = process.env['SPEAKDRAW_PROVIDER'];
+  if (process.env['SPEAKDRAW_MODEL']) cfg.model = process.env['SPEAKDRAW_MODEL'];
+  if (process.env['SPEAKDRAW_OUTPUT_DIR']) cfg.outputDir = process.env['SPEAKDRAW_OUTPUT_DIR'];
+  if (process.env['SPEAKDRAW_DIRECTION']) {
+    const dir = process.env['SPEAKDRAW_DIRECTION'];
     if (dir === 'LR' || dir === 'TB') cfg.layoutDirection = dir;
   }
   return cfg;
@@ -58,7 +58,7 @@ function loadEnvConfig(): Partial<CliConfig> {
 
 /**
  * 加载完整配置，优先级（低→高）：
- * 默认值 → ai-diagram.config.json → 环境变量 → CLI flags
+ * 默认值 → speakdraw.config.json → 环境变量 → CLI flags
  *
  * @param cliFlags - 命令行传入的标志
  * @returns 合并后的配置

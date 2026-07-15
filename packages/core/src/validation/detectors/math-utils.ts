@@ -1,5 +1,5 @@
 // packages/core/src/validation/detectors/math-utils.ts
-import type { BBox } from '@ai-diagram/shared';
+import type { BBox } from '@speakdraw/shared';
 
 /**
  * 检测两个 AABB 包围盒是否相交（含容忍误差）。
