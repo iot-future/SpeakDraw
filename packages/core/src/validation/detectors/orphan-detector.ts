@@ -1,6 +1,6 @@
 // packages/core/src/validation/detectors/orphan-detector.ts
 import type { GeometryParseResult, ValidationConflict } from '@speakdraw/shared';
-import { nextConflictId } from './math-utils';
+import { nextConflictId } from './math-utils.js';
 
 /**
  * 检测孤立节点（无任何边连接的节点）。

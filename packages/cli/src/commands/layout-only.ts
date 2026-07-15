@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { layoutDiagram, serializeToFile } from '@speakdraw/core';
 import { irDiagramSchema } from '@speakdraw/shared';
 import type { IRDiagram, Direction } from '@speakdraw/shared';
-import { createLogger } from '../utils/logger';
+import { createLogger } from '../utils/logger.js';
 
 export interface LayoutOnlyOptions {
   /** 输出文件路径 */

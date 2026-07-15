@@ -1,1 +1,1 @@
-export { buildSystemPrompt } from './base-system-prompt';
+export { buildSystemPrompt } from './base-system-prompt.js';

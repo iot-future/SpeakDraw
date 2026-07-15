@@ -1,4 +1,4 @@
-import { createLogger } from '../utils/logger';
+import { createLogger } from '../utils/logger.js';
 
 export interface ExportOptions {
   /** 导出格式 */

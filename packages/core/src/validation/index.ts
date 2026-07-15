@@ -2,13 +2,13 @@
 // 校验模块统一导出
 
 // Geometry Parser
-export { parseGeometry } from './geometry-parser';
+export { parseGeometry } from './geometry-parser.js';
 
 // Ports
-export type { ValidationPort } from './ports/validation';
+export type { ValidationPort } from './ports/validation.js';
 
 // Adapters
-export { StaticValidatorImpl } from './adapters/static-validator-impl';
+export { StaticValidatorImpl } from './adapters/static-validator-impl.js';
 
 // Detectors
 export {
@@ -17,10 +17,10 @@ export {
   detectOrphans,
   detectEdgeCrosses,
   detectLabelOverflow,
-} from './detectors';
+} from './detectors/index.js';
 
 // Math utilities
-export { aabbOverlap, segmentIntersectsBBox, linesIntersect } from './detectors/math-utils';
+export { aabbOverlap, segmentIntersectsBBox, linesIntersect } from './detectors/math-utils.js';
 
 // Smart Fix
-export { smartFix } from './smart-fix';
+export { smartFix } from './smart-fix.js';

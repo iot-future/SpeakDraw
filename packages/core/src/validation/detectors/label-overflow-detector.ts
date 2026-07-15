@@ -1,6 +1,6 @@
 // packages/core/src/validation/detectors/label-overflow-detector.ts
 import type { GeometricVertex, ValidationConflict } from '@speakdraw/shared';
-import { nextConflictId } from './math-utils';
+import { nextConflictId } from './math-utils.js';
 
 /** 字符平均宽度估算值（px），基于 14px 字体 */
 const AVG_CHAR_WIDTH = 7;

@@ -1,4 +1,4 @@
-import { mapPortToDrawio } from '../layout/port-mapping';
+import { mapPortToDrawio } from '../layout/port-mapping.js';
 import type { PortSide } from '@speakdraw/shared';
 
 /**

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { Session } from './session.types';
+import type { Session } from './session.types.js';
 
 export interface SessionManagerOptions {
   maxSessions: number;

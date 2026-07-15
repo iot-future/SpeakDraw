@@ -1,7 +1,7 @@
 // packages/core/src/validation/smart-fix.ts
 import type { ValidationConflict, ValidationOptions, GeometryParseResult } from '@speakdraw/shared';
-import type { ValidationPort } from './ports/validation';
-import { parseGeometry } from './geometry-parser';
+import type { ValidationPort } from './ports/validation.js';
+import { parseGeometry } from './geometry-parser.js';
 
 /** 默认最大修复轮数 */
 const DEFAULT_MAX_FIX_ROUNDS = 5;

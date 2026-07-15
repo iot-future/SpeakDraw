@@ -1,5 +1,5 @@
 import { createServer, type Server } from 'node:http';
-import type { SessionManager } from '../session/session-manager';
+import type { SessionManager } from '../session/session-manager.js';
 import { embedHtml } from './embed-template.js';
 
 /**

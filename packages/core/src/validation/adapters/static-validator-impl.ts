@@ -1,12 +1,12 @@
 // packages/core/src/validation/adapters/static-validator-impl.ts
 import type { ValidationReport, ValidationOptions, GeometryParseResult } from '@speakdraw/shared';
-import type { ValidationPort } from '../ports/validation';
-import { parseGeometry } from '../geometry-parser';
-import { detectOverlaps } from '../detectors/overlap-detector';
-import { detectEdgeThroughNode } from '../detectors/edge-through-node-detector';
-import { detectOrphans } from '../detectors/orphan-detector';
-import { detectEdgeCrosses } from '../detectors/edge-cross-detector';
-import { resetConflictCounter } from '../detectors/math-utils';
+import type { ValidationPort } from '../ports/validation.js';
+import { parseGeometry } from '../geometry-parser.js';
+import { detectOverlaps } from '../detectors/overlap-detector.js';
+import { detectEdgeThroughNode } from '../detectors/edge-through-node-detector.js';
+import { detectOrphans } from '../detectors/orphan-detector.js';
+import { detectEdgeCrosses } from '../detectors/edge-cross-detector.js';
+import { resetConflictCounter } from '../detectors/math-utils.js';
 
 /** 默认容忍误差（px） */
 const DEFAULT_TOLERANCE = 1;

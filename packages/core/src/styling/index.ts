@@ -6,13 +6,13 @@ export {
   DEFAULT_EDGE_STYLE,
   CARDINALITY_TO_MARKER,
   ER_EDGE_STYLE,
-} from './style-templates';
+} from './style-templates.js';
 export type {
   NodeStyleTemplate,
   EdgeStyleTemplate,
   GroupStyleTemplate,
   CardinalityMarker,
-} from './style-templates';
+} from './style-templates.js';
 export {
   compileNodeStyle,
   compileEdgeStyle,
@@ -22,4 +22,4 @@ export {
   buildNodeStyleMap,
   buildEdgeStyleMap,
   buildGroupStyleMap,
-} from './style-applier';
+} from './style-applier.js';

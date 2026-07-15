@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { runGenerate } from './commands/generate';
-import { runValidate } from './commands/validate';
-import { runExport } from './commands/export';
-import { runLayoutOnly } from './commands/layout-only';
+import { runGenerate } from './commands/generate.js';
+import { runValidate } from './commands/validate.js';
+import { runExport } from './commands/export.js';
+import { runLayoutOnly } from './commands/layout-only.js';
 
 const program = new Command();
 

@@ -1,6 +1,6 @@
 // packages/core/src/validation/detectors/edge-cross-detector.ts
 import type { GeometryParseResult, ValidationConflict } from '@speakdraw/shared';
-import { linesIntersect, nextConflictId } from './math-utils';
+import { linesIntersect, nextConflictId } from './math-utils.js';
 
 /**
  * 检测边与边之间的线段交叉冲突。

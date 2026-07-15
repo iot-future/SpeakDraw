@@ -11,8 +11,8 @@ import {
   LLMMissingKeyError,
 } from '@speakdraw/core';
 import type { LayoutOptions } from '@speakdraw/shared';
-import { loadConfig, parseEnvApiKey } from '../config';
-import { createLogger, type CliLogger } from '../utils/logger';
+import { loadConfig, parseEnvApiKey } from '../config.js';
+import { createLogger, type CliLogger } from '../utils/logger.js';
 
 export interface GenerateOptions {
   /** 输入文件路径 */

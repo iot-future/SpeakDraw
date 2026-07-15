@@ -9,7 +9,7 @@ export type {
   DiagramType,
   Direction,
   IRDiagram,
-} from './types';
+} from './types.js';
 
 export {
   nodeTypeEnum,
@@ -22,4 +22,4 @@ export {
   irEdgeSchema,
   irGroupSchema,
   irDiagramSchema,
-} from './schemas';
+} from './schemas.js';

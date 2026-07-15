@@ -1,17 +1,21 @@
 import type { IRDiagram, LayoutResult } from '@speakdraw/shared';
-import { buildNodeStyleMap, buildEdgeStyleMap, buildGroupStyleMap } from '../styling/style-applier';
+import {
+  buildNodeStyleMap,
+  buildEdgeStyleMap,
+  buildGroupStyleMap,
+} from '../styling/style-applier.js';
 import {
   buildRootCells,
   buildNodeCell,
   buildEdgeCell,
   buildContainerCell,
   wrapMxGraphModel,
-} from './mxgraph-builder';
+} from './mxgraph-builder.js';
 import type {
   NodeStyleTemplate,
   EdgeStyleTemplate,
   GroupStyleTemplate,
-} from '../styling/style-templates';
+} from '../styling/style-templates.js';
 
 /**
  * 序列化选项。

@@ -1,8 +1,8 @@
 import { writeFile } from 'node:fs/promises';
 import type { IRDiagram, LayoutResult } from '@speakdraw/shared';
 import { AppError } from '@speakdraw/shared';
-import { serialize } from './drawio-serializer';
-import type { SerializeOptions } from './drawio-serializer';
+import { serialize } from './drawio-serializer.js';
+import type { SerializeOptions } from './drawio-serializer.js';
 
 /**
  * 序列化 IR + 布局结果为 .drawio 文件。

@@ -1,7 +1,7 @@
 import type { LanguageModel } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
-import { BaseLLMProvider } from '../ports/base-llm-provider';
-import { LLMMissingKeyError } from '../errors';
+import { BaseLLMProvider } from '../ports/base-llm-provider.js';
+import { LLMMissingKeyError } from '../errors.js';
 
 /**
  * Anthropic LLM Provider 实现。

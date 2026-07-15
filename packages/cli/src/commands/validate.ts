@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { StaticValidatorImpl } from '@speakdraw/core';
-import { createLogger } from '../utils/logger';
+import { createLogger } from '../utils/logger.js';
 
 export interface ValidateOptions {
   verbose: boolean;

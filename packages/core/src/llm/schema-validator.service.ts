@@ -1,6 +1,6 @@
 import { irDiagramSchema } from '@speakdraw/shared';
 import type { IRDiagram } from '@speakdraw/shared';
-import { LLMSchemaMismatchError } from './errors';
+import { LLMSchemaMismatchError } from './errors.js';
 
 /**
  * Zod 校验错误格式化为人类可读文本，用于回灌 LLM。

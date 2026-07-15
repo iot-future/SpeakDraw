@@ -1,4 +1,4 @@
-export * from './ir';
-export { AppError } from './errors';
-export * from './layout';
-export * from './validation';
+export * from './ir/index.js';
+export { AppError } from './errors/index.js';
+export * from './layout/index.js';
+export * from './validation/index.js';

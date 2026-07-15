@@ -1,4 +1,4 @@
-import ELK from 'elkjs/lib/elk.bundled';
+import ELK from 'elkjs/lib/elk.bundled.js';
 import type {
   IRDiagram,
   LayoutResult,
@@ -7,9 +7,9 @@ import type {
   PortSide,
   LayoutOptions,
 } from '@speakdraw/shared';
-import type { ElkNode } from 'elkjs/lib/elk.bundled';
+import type { ElkNode } from 'elkjs/lib/elk.bundled.js';
 import { irDiagramSchema } from '@speakdraw/shared';
-import { convertIRToELK } from './ir-to-elk';
+import { convertIRToELK } from './ir-to-elk.js';
 
 const elk = new ELK();
 

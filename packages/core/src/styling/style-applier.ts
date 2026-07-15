@@ -1,5 +1,9 @@
 import type { IRDiagram } from '@speakdraw/shared';
-import type { NodeStyleTemplate, EdgeStyleTemplate, GroupStyleTemplate } from './style-templates';
+import type {
+  NodeStyleTemplate,
+  EdgeStyleTemplate,
+  GroupStyleTemplate,
+} from './style-templates.js';
 import {
   NODE_STYLE_TEMPLATES,
   EDGE_STYLE_TEMPLATES,
@@ -8,7 +12,7 @@ import {
   DEFAULT_EDGE_STYLE,
   CARDINALITY_TO_MARKER,
   ER_EDGE_STYLE,
-} from './style-templates';
+} from './style-templates.js';
 
 /**
  * 将分组容器样式模板编译为 draw.io style 属性字符串。

@@ -1,6 +1,6 @@
 // packages/core/src/validation/detectors/edge-through-node-detector.ts
 import type { GeometryParseResult, ValidationConflict, BBox } from '@speakdraw/shared';
-import { segmentIntersectsBBox, nextConflictId } from './math-utils';
+import { segmentIntersectsBBox, nextConflictId } from './math-utils.js';
 
 /**
  * 检测连线穿过非端点节点的冲突。

@@ -1,7 +1,7 @@
 import type { LanguageModel } from 'ai';
 import { openai } from '@ai-sdk/openai';
-import { BaseLLMProvider } from '../ports/base-llm-provider';
-import { LLMMissingKeyError } from '../errors';
+import { BaseLLMProvider } from '../ports/base-llm-provider.js';
+import { LLMMissingKeyError } from '../errors.js';
 
 /**
  * OpenAI LLM Provider 实现。
