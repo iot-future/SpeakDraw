@@ -25,6 +25,9 @@ coverage/
 *.test.ts
 *.spec.ts
 test-output.*
+# 发布门禁脚本（本地验证用，不入仓库）
+scripts/validate-esm.mjs
+scripts/smoke-test.mjs
 
 # ============================
 # 缓存
