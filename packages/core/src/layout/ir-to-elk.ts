@@ -1,4 +1,4 @@
-import type { ElkNode, ElkExtendedEdge, ElkPort } from 'elkjs/lib/elk.bundled';
+import type { ElkNode, ElkExtendedEdge, ElkPort } from 'elkjs/lib/elk.bundled.js';
 import type { IRDiagram, IRNode, IREdge, LayoutOptions, PortSide } from '@speakdraw/shared';
 
 /** 默认布局参数（仅含本模块消费的字段，padding 由 elk-layouter.ts 单独管理） */

@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:coverage": "pnpm -r --if-present run test:coverage",
     "test:watch": "vitest",
+    "test:release": "pnpm build && node scripts/validate-esm.mjs --check-runtime && node scripts/smoke-test.mjs",
     "prepare": "husky"
   },
   "devDependencies": {
