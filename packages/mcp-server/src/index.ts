@@ -15,11 +15,11 @@ async function main(): Promise<void> {
   process.stderr.write(
     '┌─────────────────────────────────────────────┐\n' +
       '│  🎨 SpeakDraw MCP Server v0.2.2            │\n' +
-      '│  等待 MCP 客户端连接（stdio 协议）            │\n' +
+      '│  Waiting for MCP client (stdio transport)   │\n' +
       '│                                             │\n' +
-      '│  预览服务: http://localhost:3000             │\n' +
-      '│  提示: 本进程由 MCP 客户端管理，请勿手动关闭    │\n' +
-      '│        Ctrl+C 可安全退出                      │\n' +
+      '│  Preview: http://localhost:3000              │\n' +
+      '│  Managed by MCP client — do not kill manually│\n' +
+      '│  Press Ctrl+C to stop safely                │\n' +
       '└─────────────────────────────────────────────┘\n',
   );
 
@@ -65,20 +65,20 @@ async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   try {
     await server.connect(transport);
-    process.stderr.write('[mcp-server] ✅ 客户端已连接，14 个工具就绪\n');
+    process.stderr.write('[mcp-server] Client connected, 14 tools ready\n');
   } catch (err: unknown) {
     await previewServer.stop();
     throw err;
   }
 
   process.on('SIGINT', async () => {
-    process.stderr.write('[mcp-server] 收到 SIGINT，正在关闭...\n');
+    process.stderr.write('[mcp-server] Shutting down (SIGINT)...\n');
     await previewServer.stop();
     await server.close();
     process.exit(0);
   });
   process.on('SIGTERM', async () => {
-    process.stderr.write('[mcp-server] 收到 SIGTERM，正在关闭...\n');
+    process.stderr.write('[mcp-server] Shutting down (SIGTERM)...\n');
     await previewServer.stop();
     await server.close();
     process.exit(0);
