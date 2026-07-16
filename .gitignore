@@ -72,7 +72,6 @@ Thumbs.db
 # ============================
 .cursor/
 .codebuddy
-CODEBUDDY.md
 .superpowers/
 .playwright-cli/
 *-debug.png
