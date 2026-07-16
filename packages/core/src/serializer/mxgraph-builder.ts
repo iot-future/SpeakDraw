@@ -93,7 +93,7 @@ export function buildContainerCell(
   parent = '1',
 ): string[] {
   return [
-    `        <mxCell id="${escapeXml(id)}" value="${escapeXml(label)}" style="${escapeXml(style)}" vertex="1" container="1" parent="${escapeXml(parent)}">`,
+    `        <mxCell id="${escapeXml(id)}" value="${prepareLabel(label)}" style="${escapeXml(style)}" vertex="1" container="1" parent="${escapeXml(parent)}">`,
     `          <mxGeometry x="${x}" y="${y}" width="${width}" height="${height}" as="geometry" />`,
     '        </mxCell>',
   ];
@@ -124,7 +124,7 @@ export function buildNodeCell(
   parent = '1',
 ): string[] {
   return [
-    `        <mxCell id="${escapeXml(id)}" value="${escapeXml(label)}" style="${escapeXml(style)}" vertex="1" parent="${escapeXml(parent)}">`,
+    `        <mxCell id="${escapeXml(id)}" value="${prepareLabel(label)}" style="${escapeXml(style)}" vertex="1" parent="${escapeXml(parent)}">`,
     `          <mxGeometry x="${x}" y="${y}" width="${width}" height="${height}" as="geometry" />`,
     '        </mxCell>',
   ];
@@ -167,7 +167,7 @@ export function buildEdgeCell(
   const isEREdge = style.includes('entityRelationEdgeStyle');
 
   // 构建属性
-  const valueAttr = label ? ` value="${escapeXml(label)}"` : '';
+  const valueAttr = label ? ` value="${prepareLabel(label)}"` : '';
 
   // Port 映射属性（ER 边跳过，draw.io 自动处理端口）
   let portAttrStr = '';
