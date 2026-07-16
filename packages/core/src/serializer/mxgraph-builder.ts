@@ -14,7 +14,8 @@ export function escapeXml(str: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
+    .replace(/'/g, '&apos;')
+    .replace(/\n/g, '&#xa;'); // 换行 → draw.io XML 实体，必须在 & 转义之后
 }
 
 /**
