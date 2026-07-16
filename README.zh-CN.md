@@ -49,6 +49,99 @@ node packages/mcp-server/dist/index.js
 
 > **注意**：LLM 功能需要 API Key（`OPENAI_API_KEY` / `ANTHROPIC_API_KEY` 等），通过 Web UI 设置或环境变量配置。
 
+### MCP Server 配置
+
+SpeakDraw 的 MCP Server 通过 stdio 协议提供 **14 个工具**，兼容任何 MCP 客户端（Claude Desktop、CodeBuddy、Continue、Cursor 等）。
+
+#### 接入 MCP 客户端
+
+在 MCP 客户端的配置文件中添加：
+
+**Claude Desktop** (`claude_desktop_config.json`)：
+
+```json
+{
+  "mcpServers": {
+    "speakdraw": {
+      "command": "node",
+      "args": ["/absolute/path/to/packages/mcp-server/dist/index.js"]
+    }
+  }
+}
+```
+
+**CodeBuddy** (`.codebuddy/mcp.json`)：
+
+```json
+{
+  "mcpServers": {
+    "speakdraw": {
+      "command": "node",
+      "args": ["./packages/mcp-server/dist/index.js"],
+      "env": {}
+    }
+  }
+}
+```
+
+#### 零 Key 模式（推荐）
+
+推荐的工作方式**无需在服务端配置 LLM API Key**：
+
+1. AI 客户端读取工具描述，理解 `IRDiagram` JSON 结构
+2. 客户端自己的 LLM 构造 `IRDiagram` JSON（含实体、关系、属性）
+3. 调用 `generate_diagram({ ir: {...} })` —— MCP Server 负责布局、样式、校验
+
+这是**零 Key 模式** —— MCP Server 只做布局 + 序列化，不需要 LLM。
+
+#### 描述模式（Fallback）
+
+如果 AI 客户端无法构造 `IRDiagram` JSON，可使用自然语言模式：
+
+```json
+{
+  "mcpServers": {
+    "speakdraw": {
+      "command": "node",
+      "args": ["/path/to/packages/mcp-server/dist/index.js"],
+      "env": {
+        "OPENAI_API_KEY": "sk-your-key-here",
+        "LLM_PROVIDER": "openai"
+      }
+    }
+  }
+}
+```
+
+| 环境变量            | 说明                                                          | 是否必需                   | 默认值   |
+| ------------------- | ------------------------------------------------------------- | -------------------------- | -------- |
+| `OPENAI_API_KEY`    | OpenAI API Key                                                | IR 模式：否 / 描述模式：是 | —        |
+| `ANTHROPIC_API_KEY` | Anthropic API Key                                             | IR 模式：否 / 描述模式：是 | —        |
+| `LLM_PROVIDER`      | LLM 服务商（`openai` / `anthropic` / `deepseek` / `hunyuan`） | 否                         | `openai` |
+
+#### 工具清单
+
+| 工具                                       | 说明                                |
+| ------------------------------------------ | ----------------------------------- |
+| `start_session`                            | 启动会话，返回 sessionId + 预览链接 |
+| `generate_diagram`                         | 从 IR JSON 或自然语言生成图表       |
+| `get_diagram`                              | 获取当前 XML 及 cell 状态           |
+| `edit_diagram`                             | 原子编辑操作（增/改/删）            |
+| `validate_diagram`                         | 5 项几何校验                        |
+| `smart_fix`                                | 自动修复几何冲突                    |
+| `export_diagram`                           | 导出 `.drawio` 文件                 |
+| `list_pages`                               | 列出所有页面及元信息                |
+| `add_page` / `rename_page` / `delete_page` | 页面管理                            |
+| `auto_layout`                              | 对已有拓扑重新布局                  |
+| `find_cells`                               | 按关键词/类型搜索 cell              |
+| `apply_theme`                              | 应用预定义主题                      |
+
+配置完成后，重启 MCP 客户端，然后说：
+
+```
+帮我创建一个 SpeakDraw 图表会话
+```
+
 ## 架构
 
 ```
