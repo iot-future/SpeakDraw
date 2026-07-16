@@ -1,6 +1,6 @@
 {
   "name": "@speakdraw/mcp-server",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "private": true,
   "description": "MCP Server for SpeakDraw — expose diagram generation as MCP tools",
   "type": "module",
