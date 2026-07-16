@@ -28,8 +28,8 @@ const EMOJI_REPLACEMENTS: Record<string, string> = {
 /** Unicode box-drawing separator pattern (6+ consecutive chars treated as separator) */
 const SEPARATOR_PATTERN = /[─━]{6,}/g;
 
-/** Horizontal rule HTML tag for draw.io html=1 rendering mode */
-const SEPARATOR_HTML = '<hr size="1" noshade="noshade">';
+/** Horizontal rule HTML tag for draw.io html=1 rendering mode (pre-escaped for XML attribute safety) */
+const SEPARATOR_HTML = escapeXml('<hr size="1" noshade="noshade">');
 
 /**
  * Prepare a draw.io node label value.
@@ -37,6 +37,9 @@ const SEPARATOR_HTML = '<hr size="1" noshade="noshade">';
  *
  * Ordering is critical: separator replacement must happen AFTER XML escaping,
  * otherwise `<hr>` would be escaped by `escapeXml()` into `&lt;hr&gt;` and break.
+ * The pre-escaped form (&lt;hr&gt;) is safe for both DOMParser (strict, embed iframe)
+ * and mxObjectXmlParser (lenient, desktop app) — both decode entities and
+ * render `<hr>` for draw.io html=1 mode.
  *
  * @param rawLabel - Raw label text from IR
  * @returns Label string ready for draw.io mxCell value attribute
