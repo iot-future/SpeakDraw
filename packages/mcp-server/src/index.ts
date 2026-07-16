@@ -12,6 +12,17 @@ async function main(): Promise<void> {
 
   await previewServer.start(sessionManager);
 
+  process.stderr.write(
+    '┌─────────────────────────────────────────────┐\n' +
+      '│  🎨 SpeakDraw MCP Server v0.2.2            │\n' +
+      '│  等待 MCP 客户端连接（stdio 协议）            │\n' +
+      '│                                             │\n' +
+      '│  预览服务: http://localhost:3000             │\n' +
+      '│  提示: 本进程由 MCP 客户端管理，请勿手动关闭    │\n' +
+      '│        Ctrl+C 可安全退出                      │\n' +
+      '└─────────────────────────────────────────────┘\n',
+  );
+
   const server = new Server(
     { name: 'speakdraw-mcp', version: '0.1.0' },
     { capabilities: { tools: {} } },
