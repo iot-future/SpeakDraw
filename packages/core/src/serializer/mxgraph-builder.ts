@@ -18,6 +18,45 @@ export function escapeXml(str: string): string {
     .replace(/\n/g, '&#xa;'); // 换行 → draw.io XML 实体，必须在 & 转义之后
 }
 
+/** Emoji → 纯文本替换映射，用于 draw.io 兼容（PRD AC-06） */
+const EMOJI_REPLACEMENTS: Record<string, string> = {
+  '🔑': '[PK]',
+  '🔒': '[LOCK]',
+  '🔗': '[LINK]',
+};
+
+/** Unicode 制表分隔线模式（6 个及以上连续字符视为分隔线） */
+const SEPARATOR_PATTERN = /[─━]{6,}/g;
+
+/** draw.io html=1 渲染模式下的水平分隔线 HTML 标签 */
+const SEPARATOR_HTML = '<hr size="1" noshade="noshade">';
+
+/**
+ * 准备 draw.io 节点标签值。
+ * 三步处理管线：emoji 文本替换 → XML 转义（含换行） → 分隔线 HTML 注入。
+ *
+ * 注意顺序是关键：分隔线替换必须在 XML 转义之后，
+ * 否则 `<hr>` 会被 `escapeXml()` 转义为 `&lt;hr&gt;` 而失效。
+ *
+ * @param rawLabel - IR 中的原始标签文本
+ * @returns draw.io mxCell value 属性可用的标签字符串
+ */
+export function prepareLabel(rawLabel: string): string {
+  // Step 1: Emoji 替换（纯文本，在 XML 转义前）
+  let label = rawLabel;
+  for (const [emoji, replacement] of Object.entries(EMOJI_REPLACEMENTS)) {
+    label = label.replaceAll(emoji, replacement);
+  }
+
+  // Step 2: XML 转义（含 \n → &#xa;）
+  label = escapeXml(label);
+
+  // Step 3: 分隔线替换（在 XML 转义后，<hr> 保持原样不被转义）
+  label = label.replace(SEPARATOR_PATTERN, SEPARATOR_HTML);
+
+  return label;
+}
+
 /**
  * 构建 mxGraphModel 的根 cell（id=0 和 id=1）。
  * draw.io 要求必须有这两个基础 cell（对齐 PRD S3-07）。
