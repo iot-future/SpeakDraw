@@ -1,6 +1,6 @@
 {
   "name": "speakdraw",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "description": "SpeakDraw — 自然语言驱动的智能画图工具",
   "scripts": {
