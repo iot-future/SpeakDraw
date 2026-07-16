@@ -65,17 +65,20 @@ async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   try {
     await server.connect(transport);
+    process.stderr.write('[mcp-server] ✅ 客户端已连接，14 个工具就绪\n');
   } catch (err: unknown) {
     await previewServer.stop();
     throw err;
   }
 
   process.on('SIGINT', async () => {
+    process.stderr.write('[mcp-server] 收到 SIGINT，正在关闭...\n');
     await previewServer.stop();
     await server.close();
     process.exit(0);
   });
   process.on('SIGTERM', async () => {
+    process.stderr.write('[mcp-server] 收到 SIGTERM，正在关闭...\n');
     await previewServer.stop();
     await server.close();
     process.exit(0);
