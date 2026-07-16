@@ -16,7 +16,7 @@ export interface ValidationConflict {
   message: string;
   /** Severity level */
   severity: ConflictSeverity;
-  /** 处理建议（可选），每条一个独立建议。CLI 环境下以纯文本逐行输出 */
+  /** Actionable suggestions (optional), one per item. Rendered as plain text in CLI environments. */
   suggestions?: string[];
 }
 

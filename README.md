@@ -49,6 +49,99 @@ node packages/mcp-server/dist/index.js
 
 > **Note**: LLM features require an API key (`OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / etc.). Configure via Web UI settings or environment variables.
 
+### MCP Server Configuration
+
+SpeakDraw's MCP Server exposes **14 tools** via stdio transport, compatible with any MCP-compatible client (Claude Desktop, CodeBuddy, Continue, Cursor, etc.).
+
+#### Connect to Your MCP Client
+
+Add the following to your MCP client's configuration file:
+
+**Claude Desktop** (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "speakdraw": {
+      "command": "node",
+      "args": ["/absolute/path/to/packages/mcp-server/dist/index.js"]
+    }
+  }
+}
+```
+
+**CodeBuddy** (`.codebuddy/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "speakdraw": {
+      "command": "node",
+      "args": ["./packages/mcp-server/dist/index.js"],
+      "env": {}
+    }
+  }
+}
+```
+
+#### Zero-API-Key Mode (Recommended)
+
+The recommended workflow requires **no LLM API key** on the server side:
+
+1. Your AI client reads the tool descriptions and understands the `IRDiagram` JSON schema
+2. The client's own LLM constructs an `IRDiagram` JSON with entities, relationships, and attributes
+3. Pass it to `generate_diagram({ ir: {...} })` — the MCP server handles layout, styling, and validation
+
+This is the **zero-key mode** — the MCP server only does layout + serialization.
+
+#### Description Mode (Fallback)
+
+If your AI client cannot construct `IRDiagram` JSON, you can use the natural language mode:
+
+```json
+{
+  "mcpServers": {
+    "speakdraw": {
+      "command": "node",
+      "args": ["/path/to/packages/mcp-server/dist/index.js"],
+      "env": {
+        "OPENAI_API_KEY": "sk-your-key-here",
+        "LLM_PROVIDER": "openai"
+      }
+    }
+  }
+}
+```
+
+| Env Variable        | Description                                                    | Required                            | Default  |
+| ------------------- | -------------------------------------------------------------- | ----------------------------------- | -------- |
+| `OPENAI_API_KEY`    | OpenAI API Key                                                 | IR mode: No / Description mode: Yes | —        |
+| `ANTHROPIC_API_KEY` | Anthropic API Key                                              | IR mode: No / Description mode: Yes | —        |
+| `LLM_PROVIDER`      | LLM provider (`openai` / `anthropic` / `deepseek` / `hunyuan`) | No                                  | `openai` |
+
+#### Available Tools
+
+| Tool                                       | Description                                              |
+| ------------------------------------------ | -------------------------------------------------------- |
+| `start_session`                            | Start a diagram session, returns sessionId + preview URL |
+| `generate_diagram`                         | Generate diagram from IR JSON or natural language        |
+| `get_diagram`                              | Get current XML and cell state                           |
+| `edit_diagram`                             | Atomic edit operations (add/update/delete)               |
+| `validate_diagram`                         | Static geometry validation (5 checks)                    |
+| `smart_fix`                                | Auto-fix geometry conflicts                              |
+| `export_diagram`                           | Export `.drawio` file                                    |
+| `list_pages`                               | List all pages with metadata                             |
+| `add_page` / `rename_page` / `delete_page` | Page management                                          |
+| `auto_layout`                              | Re-run ELK layout on existing topology                   |
+| `find_cells`                               | Search cells by keyword/type                             |
+| `apply_theme`                              | Apply a predefined theme                                 |
+
+Once configured, restart your MCP client and start a session:
+
+```
+Start a SpeakDraw diagram session for me
+```
+
 ## Architecture
 
 ```

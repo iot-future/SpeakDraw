@@ -15,43 +15,43 @@ export function escapeXml(str: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;')
-    .replace(/\n/g, '&#xa;'); // 换行 → draw.io XML 实体，必须在 & 转义之后
+    .replace(/\n/g, '&#xa;'); // newline → draw.io XML entity, must come AFTER & escaping
 }
 
-/** Emoji → 纯文本替换映射，用于 draw.io 兼容（PRD AC-06） */
+/** Emoji → plaintext replacement map for draw.io compatibility (PRD AC-06) */
 const EMOJI_REPLACEMENTS: Record<string, string> = {
   '🔑': '[PK]',
   '🔒': '[LOCK]',
   '🔗': '[LINK]',
 };
 
-/** Unicode 制表分隔线模式（6 个及以上连续字符视为分隔线） */
+/** Unicode box-drawing separator pattern (6+ consecutive chars treated as separator) */
 const SEPARATOR_PATTERN = /[─━]{6,}/g;
 
-/** draw.io html=1 渲染模式下的水平分隔线 HTML 标签 */
+/** Horizontal rule HTML tag for draw.io html=1 rendering mode */
 const SEPARATOR_HTML = '<hr size="1" noshade="noshade">';
 
 /**
- * 准备 draw.io 节点标签值。
- * 三步处理管线：emoji 文本替换 → XML 转义（含换行） → 分隔线 HTML 注入。
+ * Prepare a draw.io node label value.
+ * Three-step pipeline: emoji text replacement → XML escape (incl. newlines) → separator HTML injection.
  *
- * 注意顺序是关键：分隔线替换必须在 XML 转义之后，
- * 否则 `<hr>` 会被 `escapeXml()` 转义为 `&lt;hr&gt;` 而失效。
+ * Ordering is critical: separator replacement must happen AFTER XML escaping,
+ * otherwise `<hr>` would be escaped by `escapeXml()` into `&lt;hr&gt;` and break.
  *
- * @param rawLabel - IR 中的原始标签文本
- * @returns draw.io mxCell value 属性可用的标签字符串
+ * @param rawLabel - Raw label text from IR
+ * @returns Label string ready for draw.io mxCell value attribute
  */
 export function prepareLabel(rawLabel: string): string {
-  // Step 1: Emoji 替换（纯文本，在 XML 转义前）
+  // Step 1: Emoji replacement (plaintext, before XML escape)
   let label = rawLabel;
   for (const [emoji, replacement] of Object.entries(EMOJI_REPLACEMENTS)) {
     label = label.replaceAll(emoji, replacement);
   }
 
-  // Step 2: XML 转义（含 \n → &#xa;）
+  // Step 2: XML escape (includes \n → &#xa;)
   label = escapeXml(label);
 
-  // Step 3: 分隔线替换（在 XML 转义后，<hr> 保持原样不被转义）
+  // Step 3: Separator replacement (after XML escape, <hr> stays literal)
   label = label.replace(SEPARATOR_PATTERN, SEPARATOR_HTML);
 
   return label;

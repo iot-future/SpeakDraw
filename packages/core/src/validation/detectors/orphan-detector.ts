@@ -2,7 +2,7 @@
 import type { GeometryParseResult, ValidationConflict } from '@speakdraw/shared';
 import { nextConflictId } from './math-utils.js';
 
-/** 孤立节点的处理建议 */
+/** Actionable suggestions for orphan nodes */
 const ORPHAN_SUGGESTIONS = [
   '该节点确实独立（如配置表、日志表），可以忽略此提示',
   '关联关系在提取时遗漏，可以补充描述后重新生成',
@@ -10,14 +10,14 @@ const ORPHAN_SUGGESTIONS = [
 ];
 
 /**
- * 检测孤立节点（无任何边连接的节点）。
+ * Detect orphan nodes (nodes without any edges connected).
  *
- * 检查所有顶点的入度和出度，若两者均为 0 则为孤立节点。
- * 严重程度为 warning（不阻塞生成）。
- * 每个冲突附带 3 条处理建议，引导用户自行决策。
+ * Checks in-degree and out-degree of all vertices; if both are 0 the node is an orphan.
+ * Severity is warning (does not block generation).
+ * Each conflict includes 3 actionable suggestions to guide user decisions.
  *
- * @param result - 几何解析结果
- * @returns 孤立冲突列表
+ * @param result - Geometry parse result
+ * @returns List of orphan conflicts with suggestions
  */
 export function detectOrphans(result: GeometryParseResult): ValidationConflict[] {
   const connectedIds = new Set<string>();
