@@ -14,6 +14,7 @@ export {
   buildContainerCell,
   wrapMxGraphModel,
   escapeXml,
+  prepareLabel,
 } from './serializer/mxgraph-builder.js';
 
 // Style system

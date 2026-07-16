@@ -28,15 +28,22 @@ const EMOJI_REPLACEMENTS: Record<string, string> = {
 /** Unicode 制表分隔线模式（6 个及以上连续字符视为分隔线） */
 const SEPARATOR_PATTERN = /[─━]{6,}/g;
 
-/** draw.io html=1 渲染模式下的水平分隔线 HTML 标签 */
-const SEPARATOR_HTML = '<hr size="1" noshade="noshade">';
+/** draw.io html=1 渲染模式下的水平分隔线 HTML 标签（已 XML 实体转义，适配 mxCell value 属性） */
+const SEPARATOR_HTML = escapeXml('<hr size="1" noshade="noshade">');
 
 /**
  * 准备 draw.io 节点标签值。
  * 三步处理管线：emoji 文本替换 → XML 转义（含换行） → 分隔线 HTML 注入。
  *
- * 注意顺序是关键：分隔线替换必须在 XML 转义之后，
- * 否则 `<hr>` 会被 `escapeXml()` 转义为 `&lt;hr&gt;` 而失效。
+ * 顺序是关键：
+ * 1. Emoji → 纯文本（在任何转义之前）
+ * 2. XML 转义（&#xa; 换行，实体转义 < > & " '）
+ * 3. 分隔线替换：注入已预转义的 &lt;hr&gt; HTML（XML 实体安全）。
+ *    必须在步骤 2 之后执行，因为步骤 2 的首步 `& → &amp;` 会把
+ *    `&lt;hr&gt;` 中的 `&` 二次转义为 `&amp;lt;hr&gt;`。
+ *    XML 转义后的形式对 DOMParser（严格，embed iframe）和
+ *    mxObjectXmlParser（宽松，桌面 app）均合法——两者解码实体后
+ *    还原为 `<hr>` 供 draw.io html=1 渲染。
  *
  * @param rawLabel - IR 中的原始标签文本
  * @returns draw.io mxCell value 属性可用的标签字符串
